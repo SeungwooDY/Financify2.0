@@ -4,6 +4,7 @@ import "./globals.css"
 import { Providers } from "./providers"
 import { AppShellWrapper } from "@/components/layout/AppShellWrapper"
 import { RouteLogger } from "@/components/RouteLogger"
+import { AuthWrapper } from "@/components/auth"
 
 export const dynamic = 'force-dynamic'
 
@@ -35,9 +36,11 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-sans antialiased">
         <Providers>
           <RouteLogger />
-          <AppShellWrapper>
-            {children}
-          </AppShellWrapper>
+          <AuthWrapper>
+            <AppShellWrapper>
+              {children}
+            </AppShellWrapper>
+          </AuthWrapper>
         </Providers>
       </body>
     </html>

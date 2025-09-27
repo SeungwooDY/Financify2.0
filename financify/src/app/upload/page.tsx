@@ -217,11 +217,11 @@ export default function UploadPage() {
               <Card className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-center">Preview & Parse</CardTitle>
-                  <p className="text-lg text-muted-foreground max-w-6xl mx-auto leading-relaxed px-4" style={{ 
+                  <p className="text-lg text-muted-foreground max-w-8xl mx-auto leading-relaxed px-4" style={{ 
                     whiteSpace: 'normal', 
                     wordBreak: 'normal', 
                     overflowWrap: 'break-word',
-                    lineHeight: '1.6',
+                    lineHeight: '1.7',
                     textAlign: 'center'
                   }}>
                     Review your parsed transactions and edit categories as needed. 
@@ -306,7 +306,7 @@ export default function UploadPage() {
               <Card className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-center">Confirm & Generate</CardTitle>
-                  <p className="text-lg text-muted-foreground max-w-6xl mx-auto leading-relaxed px-4" style={{ 
+                  <p className="text-lg text-muted-foreground max-w-8xl mx-auto leading-relaxed px-4" style={{ 
                     whiteSpace: 'normal', 
                     wordBreak: 'normal', 
                     overflowWrap: 'break-word',
@@ -324,7 +324,7 @@ export default function UploadPage() {
                       <h4 className="text-lg font-semibold text-text mb-2">
                         Ready to create your Wrapped?
                       </h4>
-                      <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
+                      <p className="text-text-secondary leading-relaxed max-w-8xl mx-auto">
                         We&apos;ll process {parsedData.length} transactions and generate your personalized insights. 
                         This includes spending analysis, category breakdowns, trend identification, and personalized recommendations.
                       </p>
