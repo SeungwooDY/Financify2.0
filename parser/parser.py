@@ -20,11 +20,12 @@ def main():
         print("Usage: python parser.py <file_path> [bank]")
         return
     file_path = sys.argv[1]
+    bank = sys.argv[2] if len(sys.argv) > 2 else 'capital_one'
     file_type = detect_file_type(file_path)
     if file_type == 'csv':
         transactions = extract_transactions_from_csv(file_path)
     elif file_type == 'pdf':
-        transactions = extract_transactions_from_pdf(file_path)
+        transactions = extract_transactions_from_pdf((file_path, bank))
     elif file_type == 'image':
         sentences = read_image_sentences(file_path)
         transactions = extract_transactions(sentences)

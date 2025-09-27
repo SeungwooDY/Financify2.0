@@ -1,6 +1,7 @@
 import re
 import sys
 import pdfplumber
+from bank_profiles import BANK_PROFILES
 
 def extract_transactions_from_pdf(pdf_path):
     """
@@ -8,46 +9,51 @@ def extract_transactions_from_pdf(pdf_path):
     Returns a list of dictionaries with keys: 'amount', 'date', 'description'.
     """
     transactions = []
-    # Only match monetary values (with decimal or comma)
-    money_pattern = r'\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})|[0-9]+\.[0-9]{2})'
-    date_pattern = r'^(\d{1,2}/\d{1,2}(?:/\d{2,4})?|\d{4}-\d{2}-\d{2}|[A-Za-z]{3,9} \d{1,2}, \d{4})'
-    exclude_keywords = ['page', 'totals']
-    date_pattern = r'^(\d{1,2}/\d{1,2}(?:/\d{2,4})?|\d{4}-\d{2}-\d{2}|[A-Za-z]{3,9} \d{1,2}, \d{4})'
-
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text()
-            if not text:
-                continue
-            lines = text.splitlines()
-            for line in lines:
-                line_stripped = line.strip()
-                # Exclude lines with non-transaction keywords
-                if any(kw in line_stripped.lower() for kw in exclude_keywords):
+    def get_profile(bank):
+        return BANK_PROFILES.get(bank, BANK_PROFILES['capital_one'])
+    # Accept bank argument
+    def parse(pdf_path, bank):
+        profile = get_profile(bank)
+        date_pattern = profile['date_pattern']
+        amount_pattern = profile['amount_pattern']
+        exclude_keywords = profile['exclude_keywords']
+        with pdfplumber.open(pdf_path) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if not text:
                     continue
-                date_match = re.match(date_pattern, line_stripped)
-                if date_match:
-                    amounts = re.findall(money_pattern, line_stripped)
-                    if amounts:
-                        # Remove date and all amounts from description
-                        desc = line_stripped
-                        # Remove date
-                        desc = re.sub(date_pattern, '', desc, count=1).strip()
-                        # Remove all monetary values
-                        desc = re.sub(money_pattern, '', desc).strip()
-                        transactions.append({
-                            'date': date_match.group(0),
-                            'amount': amounts[0],
-                            'description': desc
-                        })
-    return transactions
+                lines = text.splitlines()
+                for line in lines:
+                    line_stripped = line.strip()
+                    if any(kw in line_stripped.lower() for kw in exclude_keywords):
+                        continue
+                    date_match = re.match(date_pattern, line_stripped)
+                    if date_match:
+                        amounts = re.findall(amount_pattern, line_stripped)
+                        if amounts:
+                            desc = line_stripped
+                            desc = re.sub(date_pattern, '', desc, count=1).strip()
+                            desc = re.sub(amount_pattern, '', desc).strip()
+                            transactions.append({
+                                'date': date_match.group(0),
+                                'amount': amounts[0],
+                                'description': desc
+                            })
+        return transactions
+    # Accept bank argument from caller
+    if hasattr(pdf_path, '__iter__') and len(pdf_path) == 2:
+        pdf_path, bank = pdf_path
+    else:
+        bank = 'capital_one'
+    return parse(pdf_path, bank)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python pdfParser.py <pdf_path>")
+        print("Usage: python pdfParser.py <pdf_path> [bank]")
     else:
         pdf_path = sys.argv[1]
-        transactions = extract_transactions_from_pdf(pdf_path)
+        bank = sys.argv[2] if len(sys.argv) > 2 else 'capital_one'
+        transactions = extract_transactions_from_pdf((pdf_path, bank))
         print("Extracted Transactions:")
         if transactions:
             for idx, txn in enumerate(transactions, 1):
