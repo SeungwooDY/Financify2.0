@@ -1,3 +1,18 @@
+def get_optimal_scale(img, target_height=24):
+    """
+    Determines optimal scale factor so the smallest detected text height reaches target_height pixels.
+    Returns scale factor (float).
+    """
+    import pytesseract
+    import numpy as np
+    # Run OCR to get bounding boxes
+    data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+    heights = [h for h in data['height'] if h > 0]
+    if not heights:
+        return 1.0
+    min_height = min(heights)
+    scale = max(target_height / min_height, 1.0)
+    return scale
 from PIL import Image
 import pytesseract
 
@@ -29,25 +44,55 @@ def extract_transactions(sentences):
             })
     return transactions
 
+def preprocess_image(img):
+    img = img.convert('L')
+    from PIL import ImageEnhance, ImageFilter, ImageStat
+    import numpy as np
+
+    # Automatic image quality detection
+    stat = ImageStat.Stat(img)
+    brightness = stat.mean[0]
+    try:
+        arr = np.array(img)
+        laplacian = np.var(np.gradient(arr))
+    except Exception:
+        laplacian = 0
+
+    # Adaptive contrast
+    if brightness < 80:
+        contrast_factor = 2.0
+    elif brightness < 120:
+        contrast_factor = 1.5
+    else:
+        contrast_factor = 1.2
+    img = ImageEnhance.Contrast(img).enhance(contrast_factor)
+
+    # Adaptive denoise
+    if laplacian < 10:
+        denoise_size = 5
+    elif laplacian < 30:
+        denoise_size = 3
+    else:
+        denoise_size = 1
+    img = img.filter(ImageFilter.MedianFilter(size=denoise_size))
+
+    # Optimal upscaling based on smallest text height
+    scale = get_optimal_scale(img, target_height=24)
+    base_width = int(img.width * scale)
+    base_height = int(img.height * scale)
+    img = img.resize((base_width, base_height), Image.LANCZOS)
+    return img
+
 def read_image_sentences(image_path):
     """
     Reads an image and extracts sentences using OCR.
     Returns a list of sentences found in the image.
     """
     img = Image.open(image_path)
-    # Preprocessing: grayscale
-    img = img.convert('L')
-    # Preprocessing: increase contrast
-    from PIL import ImageEnhance, ImageFilter
-    img = ImageEnhance.Contrast(img).enhance(2.0)
-    # Preprocessing: binarize (threshold)
-    img = img.point(lambda x: 0 if x < 140 else 255, '1')
-    # Preprocessing: denoise
-    img = img.filter(ImageFilter.MedianFilter(size=3))
-    # Preprocessing: upscale (resize)
-    base_width = img.width * 2
-    base_height = img.height * 2
-    img = img.resize((base_width, base_height), Image.LANCZOS)
+    img = preprocess_image(img)
+
+    # Save preprocessed image for inspection
+    img.save('./preprocessedImages/preprocessed_output.png')
 
     text = pytesseract.image_to_string(img)
     sentences = re.split(r'[.!?]\s+', text)
@@ -61,11 +106,8 @@ if __name__ == "__main__":
     else:
         image_path = sys.argv[1]
         sentences = read_image_sentences(image_path)
-        print("Sentences found:")
-        for i, sentence in enumerate(sentences, 1):
-            print(f"{i}. {sentence}")
-        print("\nExtracted Transactions:")
         transactions = extract_transactions(sentences)
+        print("Extracted Transactions:")
         if transactions:
             for idx, txn in enumerate(transactions, 1):
                 print(f"Transaction {idx}:")
