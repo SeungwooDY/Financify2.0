@@ -14,6 +14,17 @@ import {
   X
 } from "@/lib/icons"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { User, Settings, LogOut, Cog } from "lucide-react"
+import { useAuth } from "@/contexts/AuthContext"
 import { SkipLink } from "./SkipLink"
 import { cn } from "@/lib/utils"
 
@@ -66,6 +77,7 @@ export function AppShell({ children }: AppShellProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { scrollY } = useScroll()
+  const { user, logout } = useAuth()
   
   const [isElevated, setIsElevated] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -231,6 +243,22 @@ export function AppShell({ children }: AppShellProps) {
               </select>
             </div>
 
+            {/* Settings Icon */}
+            <div className="hidden md:flex items-center">
+              {user ? (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-10 w-10 hover:bg-accent-1/10 hover:text-accent-1 transition-colors" 
+                  asChild
+                >
+                  <a href="/settings" title="Settings">
+                    <Cog className="h-5 w-5" />
+                  </a>
+                </Button>
+              ) : null}
+            </div>
+
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
@@ -316,6 +344,45 @@ export function AppShell({ children }: AppShellProps) {
                   </Link>
                 )
               })}
+              
+              {/* Mobile Settings and Logout */}
+              {user && (
+                <>
+                  <Link
+                    href="/settings"
+                    className="flex items-center space-x-4 px-4 py-4 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 mx-4 group text-text-secondary hover:text-text hover:bg-muted/50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <div className="p-2 rounded-lg bg-muted/50 group-hover:bg-accent-1/10 transition-all duration-300">
+                      <Settings className="h-5 w-5 group-hover:text-accent-1 transition-all duration-300" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Settings</div>
+                      <div className="text-xs text-text-tertiary group-hover:text-text-secondary transition-colors">
+                        Manage your account
+                      </div>
+                    </div>
+                  </Link>
+                  
+                  <button
+                    onClick={() => {
+                      logout()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="flex items-center space-x-4 px-4 py-4 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 mx-4 group text-destructive hover:bg-destructive/10 w-full"
+                  >
+                    <div className="p-2 rounded-lg bg-destructive/10 group-hover:bg-destructive/20 transition-all duration-300">
+                      <LogOut className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold">Sign Out</div>
+                      <div className="text-xs text-text-tertiary group-hover:text-text-secondary transition-colors">
+                        Log out of your account
+                      </div>
+                    </div>
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
