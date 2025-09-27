@@ -12,8 +12,9 @@ import {
   PieChart,
   Menu,
   X
-} from "lucide-react"
+} from "@/lib/icons"
 import { Button } from "@/components/ui/button"
+import { SkipLink } from "./SkipLink"
 import { cn } from "@/lib/utils"
 
 interface AppShellProps {
@@ -138,6 +139,10 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-bg">
+      {/* Skip Links */}
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+      <SkipLink href="#main-navigation">Skip to navigation</SkipLink>
+      
       {/* Top Navigation */}
       <motion.header
         className={cn(
@@ -165,7 +170,7 @@ export function AppShell({ children }: AppShellProps) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav id="main-navigation" className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
               {navItems.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
@@ -287,7 +292,7 @@ export function AppShell({ children }: AppShellProps) {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main id="main-content" className="flex-1" role="main" aria-label="Main content">
         {children}
       </main>
     </div>

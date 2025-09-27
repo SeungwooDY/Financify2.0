@@ -193,9 +193,20 @@ export function VizBar({
       )}
       
       <div 
-        className="w-full"
+        className="w-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 rounded-md"
         role="img"
         aria-label={chartDescription}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            // Focus management for keyboard users
+            const firstBar = e.currentTarget.querySelector('[role="button"]')
+            if (firstBar) {
+              (firstBar as HTMLElement).focus()
+            }
+          }
+        }}
       >
         <ResponsiveContainer width="100%" height={dimensions.height}>
           <BarChart
@@ -444,9 +455,20 @@ export function VizLine({
       )}
       
       <div 
-        className="w-full"
+        className="w-full focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 rounded-md"
         role="img"
         aria-label={chartDescription}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            // Focus management for keyboard users
+            const firstPoint = e.currentTarget.querySelector('[role="button"]')
+            if (firstPoint) {
+              (firstPoint as HTMLElement).focus()
+            }
+          }
+        }}
       >
         <ResponsiveContainer width="100%" height={dimensions.height}>
           {renderChart()}

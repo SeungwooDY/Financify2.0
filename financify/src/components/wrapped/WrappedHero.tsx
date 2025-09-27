@@ -3,8 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion"
 import { MonthMetrics } from "@/lib/types"
 import { WrappedSummaryCard } from "./WrappedSummaryCard"
-import { CategoryBarChart } from "./CategoryBarChart"
-import { TrendLineChart } from "./TrendLineChart"
+import { LazyChart } from "@/components/charts/LazyChart"
 import { TopMerchants } from "./TopMerchants"
 import { cn } from "@/lib/utils"
 
@@ -152,7 +151,18 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <CategoryBarChart metrics={metrics} />
+              <LazyChart
+                type="bar"
+                data={metrics.categoryBreakdown.map(cat => ({
+                  category: cat.category,
+                  amount: cat.amount.amount,
+                  percentage: cat.percentage
+                }))}
+                xKey="category"
+                yKey="amount"
+                title="Spending by Category"
+                description="Monthly spending breakdown by category"
+              />
             </motion.div>
 
             {/* Bottom Row - Two columns for Trend and Merchants */}
@@ -163,7 +173,17 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.5 }}
               >
-                <TrendLineChart metrics={metrics} />
+                <LazyChart
+                  type="line"
+                  data={metrics.trend_daily.map(day => ({
+                    day: new Date(day.date).getDate().toString(),
+                    spending: day.totalSpending.amount
+                  }))}
+                  xKey="day"
+                  yKey="spending"
+                  title="Daily Spending Trend"
+                  description="Daily spending pattern throughout the month"
+                />
               </motion.div>
 
               {/* Top Merchants */}
