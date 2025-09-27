@@ -9,9 +9,14 @@ export const monthMetricsKeys = {
 
 // Hooks
 export function useMonthMetrics(month: string = new Date().toISOString().slice(0, 7)) {
+  console.log('useMonthMetrics called with month:', month)
+  
   return useQuery({
     queryKey: monthMetricsKeys.byMonth(month),
-    queryFn: () => fetchMonthMetrics(month),
+    queryFn: () => {
+      console.log('Query function called for month:', month)
+      return fetchMonthMetrics(month)
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 }

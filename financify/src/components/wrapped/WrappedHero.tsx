@@ -114,7 +114,7 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-4"
+            className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-text via-accent-1 to-purple-600 bg-clip-text text-transparent mb-4"
           >
             Your Financial Wrapped
           </motion.h1>
@@ -122,10 +122,10 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-xl text-gray-600 max-w-2xl mx-auto"
+            className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
           >
             Discover your spending patterns, top merchants, and financial insights for{" "}
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-text">
               {new Date(metrics.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </span>
           </motion.p>

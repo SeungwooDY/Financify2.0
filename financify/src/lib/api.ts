@@ -134,8 +134,11 @@ class ApiClient {
  */
 export async function fetchMonthMetrics(month: string): Promise<ApiResponse<MonthMetrics>> {
   try {
+    console.log('Fetching metrics for month:', month)
+    
     // Validate month format
     if (!/^\d{4}-\d{2}$/.test(month)) {
+      console.error('Invalid month format:', month)
       return {
         success: false,
         data: null,
@@ -152,8 +155,10 @@ export async function fetchMonthMetrics(month: string): Promise<ApiResponse<Mont
     // return apiClient.get<MonthMetrics>(`/metrics/${month}`)
     
     const metrics = mockDataStore.getMetrics(month)
+    console.log('Retrieved metrics:', metrics ? 'Found' : 'Not found')
     
     if (!metrics) {
+      console.error('No metrics found for month:', month)
       return {
         success: false,
         data: null,
@@ -166,12 +171,14 @@ export async function fetchMonthMetrics(month: string): Promise<ApiResponse<Mont
       }
     }
     
+    console.log('Returning metrics successfully')
     return {
       success: true,
       data: metrics,
       error: null
     }
   } catch (error) {
+    console.error('Error fetching month metrics:', error)
     return {
       success: false,
       data: null,

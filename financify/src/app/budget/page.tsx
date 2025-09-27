@@ -11,9 +11,13 @@ import {
   NextSevenDays
 } from "@/components/budget"
 import { AlertCircle, PiggyBank } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 export default function BudgetPage() {
-  const { data: monthMetrics, isLoading, error } = useMonthMetrics()
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month') || '2025-08'
+  
+  const { data: monthMetrics, isLoading, error } = useMonthMetrics(month)
   const { mode, updateMode } = useBudgetMode()
 
   if (error) {
@@ -22,7 +26,7 @@ export default function BudgetPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-lg font-semibold mb-2">Error Loading Budget Data</h2>
+            <h2 className="text-xl font-semibold mb-2">Error Loading Budget Data</h2>
             <p className="text-muted-foreground">
               There was a problem loading your budget information. Please try again.
             </p>
@@ -58,7 +62,7 @@ export default function BudgetPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <PiggyBank className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-lg font-semibold mb-2">No Budget Data Available</h2>
+            <h2 className="text-xl font-semibold mb-2">No Budget Data Available</h2>
             <p className="text-muted-foreground">
               We need some spending data to help you create a budget. Try uploading some transactions first.
             </p>
@@ -151,7 +155,7 @@ export default function BudgetPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-xl font-semibold mb-2">
                     {mode === 'budget' ? 'Ready to start budgeting?' : 'Keep up the great work!'}
                   </h3>
                   <p className="text-muted-foreground">

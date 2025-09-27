@@ -154,20 +154,20 @@ export function TransactionDetailsDrawer({
                 {/* Basic Info */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Transaction Information</CardTitle>
+                    <CardTitle className="text-lg font-semibold">Transaction Information</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Description */}
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Description</label>
-                      <p className="text-sm mt-1">{transaction.description}</p>
+                      <p className="text-sm mt-1 leading-relaxed">{transaction.description}</p>
                     </div>
 
                     {/* Merchant */}
                     {transaction.merchant && (
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">Merchant</label>
-                        <p className="text-sm mt-1">{transaction.merchant}</p>
+                        <p className="text-sm mt-1 leading-relaxed">{transaction.merchant}</p>
                       </div>
                     )}
 
@@ -175,7 +175,7 @@ export function TransactionDetailsDrawer({
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Amount</label>
                       <p className={cn(
-                        "text-lg font-semibold mt-1",
+                        "text-lg font-semibold mt-1 leading-tight",
                         getAmountColor(transaction)
                       )}>
                         {formatAmount(transaction)}

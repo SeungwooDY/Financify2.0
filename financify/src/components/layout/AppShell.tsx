@@ -74,7 +74,8 @@ export function AppShell({ children }: AppShellProps) {
     if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
       return monthParam
     }
-    return new Date().toISOString().slice(0, 7)
+    // Default to August 2025 since we have data for that month
+    return '2025-08'
   })
 
   // Handle scroll-based elevation
@@ -109,14 +110,17 @@ export function AppShell({ children }: AppShellProps) {
     const currentYear = currentDate.getFullYear()
     const currentMonth = currentDate.getMonth()
     
-    for (let i = -12; i <= 12; i++) {
-      const date = new Date(currentYear, currentMonth + i, 1)
-      const value = date.toISOString().slice(0, 7)
-      const label = date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long' 
-      })
-      options.push({ value, label })
+    // Generate months from 2024-01 to 2025-12
+    for (let year = 2024; year <= 2025; year++) {
+      for (let month = 0; month < 12; month++) {
+        const date = new Date(year, month, 1)
+        const value = date.toISOString().slice(0, 7)
+        const label = date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long' 
+        })
+        options.push({ value, label })
+      }
     }
     
     return options

@@ -152,19 +152,19 @@ export function TargetCaps({
                       <StatusIcon className={cn("h-4 w-4", statusConfig.iconColor)} />
                     </div>
                     <div>
-                      <CardTitle className="text-base font-medium">
+                      <CardTitle className="text-base font-medium leading-tight">
                         {cap.title}
                       </CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                         {cap.description}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium">
+                    <div className="text-sm font-medium leading-tight">
                       {formatCurrency(cap.current, "USD", { showCents: false })} / {formatCurrency(cap.target, "USD", { showCents: false })}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-muted-foreground leading-relaxed">
                       {cap.timeframe}
                     </div>
                   </div>

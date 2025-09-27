@@ -13,10 +13,14 @@ import {
   PiggyBank
 } from "lucide-react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 export default function DashboardPage() {
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month') || '2025-08'
+  
   // const { data: user } = useCurrentUser()
-  const { data: monthMetrics, isLoading: metricsLoading } = useMonthMetrics()
+  const { data: monthMetrics, isLoading: metricsLoading } = useMonthMetrics(month)
   const { data: transactions } = useTransactions(1, 5)
 
   // Show loading state
@@ -25,7 +29,7 @@ export default function DashboardPage() {
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your financial wrapped...</p>
+          <p className="text-muted-foreground">Loading your financial wrapped...</p>
         </div>
       </main>
     )
@@ -36,8 +40,8 @@ export default function DashboardPage() {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">No Data Available</h1>
-          <p className="text-gray-600 mb-6">We couldn&apos;t load your financial data. Please try uploading some transactions first.</p>
+          <h1 className="text-3xl font-bold tracking-tight mb-4">No Data Available</h1>
+          <p className="text-muted-foreground mb-6">We couldn&apos;t load your financial data. Please try uploading some transactions first.</p>
           <Button asChild>
             <Link href="/upload">Upload Transactions</Link>
           </Button>
@@ -55,7 +59,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-6">Quick Actions</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/upload">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">

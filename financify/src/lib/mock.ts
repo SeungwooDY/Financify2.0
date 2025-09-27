@@ -619,6 +619,10 @@ class MockDataStore {
     
     this.generateMonthData(currentMonth)
     this.generateMonthData(lastMonth)
+    
+    // Also generate data for a few months back to ensure we have data
+    const monthsBack = ['2024-12', '2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07', '2025-08']
+    monthsBack.forEach(month => this.generateMonthData(month))
   }
   
   private generateMonthData(month: string) {

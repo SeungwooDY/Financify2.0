@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react"
 import { motion } from "framer-motion"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useMonthMetrics } from "@/lib/hooks"
 import { 
   CalendarGrid,
@@ -15,8 +15,10 @@ import { AlertCircle } from "lucide-react"
 
 export default function CalendarPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month') || '2025-08'
   const [currentDate, setCurrentDate] = useState(new Date())
-  const { data: monthMetrics, isLoading, error } = useMonthMetrics()
+  const { data: monthMetrics, isLoading, error } = useMonthMetrics(month)
 
   // Generate mock daily spending data if not available
   const dailySpendingData = useMemo(() => {
@@ -103,7 +105,7 @@ export default function CalendarPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-lg font-semibold mb-2">Error Loading Calendar</h2>
+            <h2 className="text-xl font-semibold mb-2">Error Loading Calendar</h2>
             <p className="text-muted-foreground">
               There was a problem loading your calendar data. Please try again.
             </p>

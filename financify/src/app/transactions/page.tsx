@@ -114,7 +114,7 @@ export default function TransactionsPage() {
         <Card>
           <CardContent className="p-12 text-center">
             <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-lg font-semibold mb-2">Error Loading Transactions</h2>
+            <h2 className="text-xl font-semibold mb-2">Error Loading Transactions</h2>
             <p className="text-muted-foreground">
               There was a problem loading your transactions. Please try again.
             </p>
