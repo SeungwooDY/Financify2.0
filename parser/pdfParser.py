@@ -1,12 +1,18 @@
+from category_matcher import gemini_categorize_transaction
+import time
 import re
 import sys
 import pdfplumber
 from bank_profiles import BANK_PROFILES
 
 def extract_transactions_from_pdf(pdf_path):
+    def extract_category(desc):
+        category = gemini_categorize_transaction(desc)
+        time.sleep(0.5)  # Add a 0.5 second delay to avoid API rate limits
+        return category
     """
     Reads a PDF file and extracts transactions (amount, date, description).
-    Returns a list of dictionaries with keys: 'amount', 'date', 'description'.
+    Returns a list of dictionaries with keys: 'amount', 'date', 'description', 'category'.
     """
     transactions = []
     def get_profile(bank):
@@ -34,10 +40,12 @@ def extract_transactions_from_pdf(pdf_path):
                             desc = line_stripped
                             desc = re.sub(date_pattern, '', desc, count=1).strip()
                             desc = re.sub(amount_pattern, '', desc).strip()
+                            category = extract_category(desc)
                             transactions.append({
                                 'date': date_match.group(0),
                                 'amount': amounts[0],
-                                'description': desc
+                                'description': desc,
+                                'category': category
                             })
         return transactions
     # Accept bank argument from caller
