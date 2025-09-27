@@ -5,12 +5,15 @@ import os
 import shutil
 import pytesseract
 import imageReader
-#from sqlalchemy import create_engine, Column, Integer, String
-#from sqlalchemy.orm import declarative_base, sessionmaker
+from PIL import Image
+
+# from sqlalchemy import create_engine, Column, Integer, String
+# from sqlalchemy.orm import declarative_base, sessionmaker
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Annotated
-
+import re
+import io
 
 app = FastAPI()
 
@@ -36,7 +39,7 @@ os.makedirs(
 )  # creates file if doesn't exist, (exist_ok) = prevents errors if folder is already there
 
 
-@app.post("/upload_image/")
+@app.post("/upload-image/")
 async def upload_image(
     file: UploadFile = File(...),
 ):  # async function allows for concurrent requests
@@ -50,6 +53,22 @@ async def upload_image(
     return result
 
 
-@app.get("/process_image/")
-async def process_image(file_path):
-    return imageReader.read_image_sentences(file_path)
+def read_image_sentences_from_file(file) -> list[str]:
+    """
+    Reads an image and extracts sentences using OCR.
+    Returns a list of sentences found in the image.
+    """
+    # Open the image file
+    img = Image.open(file)
+    text = pytesseract.image_to_string(img)
+    sentences = re.split(r"[.!?]\s+", text)
+    sentences = [s.strip() for s in sentences if s.strip()]
+    return sentences
+
+
+@app.post("/process-image/")
+async def process_image(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    img = Image.open(io.BytesIO(image_bytes))
+    sentences = read_image_sentences_from_file(io.BytesIO(image_bytes))
+    return {"sentences": ["Hello world."]}

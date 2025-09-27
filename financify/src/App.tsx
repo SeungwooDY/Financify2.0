@@ -5,18 +5,37 @@ import './App.css'
 
 export default function FileDrop() {
   const [file, setFile] = useState<File | null>(null);
+  const [text, setText] = useState<string>("");
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault(); // prevents browser from opening file
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     for (let i = 0; i < e.dataTransfer.files.length; i++) {
       const droppedFile = e.dataTransfer.files[i];
       setFile(droppedFile);
     }
+
+    handleUpload();
   };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("http://127.0.0.1:8000/process-image/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("Backend response: ", data)
+    setText(data.sentences.join("\n"))
+  }
 
   // Handle file input
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +82,14 @@ export default function FileDrop() {
             />
           </div>
         )}
+      </div>
+      <div style={{ marginTop: "20px"}}>
+        <h3>Your expenses:</h3>
+        <textarea
+          value={text}
+          readOnly
+          style={{ width: "400px", height: "300px"}}
+        />
       </div>
     </>
   )
