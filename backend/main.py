@@ -167,5 +167,23 @@ def login(user:User):
 #create a scholarship user
 @app.post("/register_scholarship")
 def register_scholarship(scholar: ScholarInfo):
-    return 0
+    logged_user = users_collection.find_one({"logged_in": True})
+    scholar_username = logged_user["username"]
+    scholar_user = {
+        "username": scholar_username,
+        "age": scholar.age,
+        "grade":scholar.grade,
+        "gender":scholar.gender,
+        "first_gen":scholar.first_gen,
+        "disability": scholar.disability,
+        "socioeconomic_status": scholar.socioeconomic_status,
+        "military_connections":scholar.military_connections,
+        "gpa":scholar.gpa,
+        "sport":scholar.sport,
+        "artistic_talent":scholar.artistic_talent,
+        "field_of_study": scholar.field_of_study,
+        "special_interests":scholar.special_interests
+    }
+    scholarships_information_collection.insert_one(scholar_user)
+    return{"msg": "Scholarship information registration complete!"}
 
