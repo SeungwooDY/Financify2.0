@@ -26,3 +26,6 @@ dist-ssr
 .venv/
 preprocessedImages/
 __pycache__/
+
+# next.js build folder
+.next/
