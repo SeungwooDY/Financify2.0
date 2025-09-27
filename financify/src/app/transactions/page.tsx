@@ -3,16 +3,13 @@
 import React, { useState, useMemo } from "react"
 
 export const dynamic = 'force-dynamic'
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Heading, Text } from "@/components/ui/typography"
-import { useTransactions } from "@/lib/hooks/use-transactions"
-import { useTransactionFilters } from "@/lib/hooks/use-transaction-filters"
+import { useTransactions, useTransactionFilters } from "@/lib/hooks"
 import { 
   TransactionTable,
   TransactionFilters,
-  TransactionDetailsDrawer,
-  TransactionToolbar
+  TransactionDetailsDrawer
 } from "@/components/transactions"
 import { Transaction, TransactionCategory } from "@/lib/types"
 import { AlertCircle } from "lucide-react"
@@ -126,98 +123,77 @@ export default function TransactionsPage() {
   }
 
   return (
-    <main className="container-5xl py-8">
-      <div className="space-y-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Heading as="h1" size="4xl" className="mb-2 text-balance w-full force-normal-wrap">Transactions</Heading>
-          <Text color="muted" size="lg" className="text-pretty w-full force-normal-wrap">
-            View and manage all your financial transactions
+    <main className="min-h-screen">
+      <div className="max-w-[1264px] mx-auto px-6 py-12">
+        <div className="mb-8">
+          <Heading as="h1" size="4xl" className="mb-4 text-balance">Transactions</Heading>
+          <Text size="lg" color="muted" className="max-w-2xl">
+            View and manage all your financial transactions with powerful filtering and search
           </Text>
-        </motion.div>
+        </div>
 
-        {/* Toolbar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <TransactionToolbar
-            totalCount={allTransactions.length}
-            filteredCount={filteredTransactions.length}
-            density={filters.density}
-            onDensityChange={(density) => updateFilters({ density })}
-            onAddTransaction={handleAddTransaction}
-            onImportTransactions={handleImportTransactions}
-            onExportTransactions={handleExportTransactions}
-            onSettings={handleSettings}
-          />
-        </motion.div>
-
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <TransactionFilters
-            categories={availableCategories}
-            selectedCategories={filters.categories}
-            onCategoryToggle={toggleCategory}
-            merchantSearch={filters.merchant}
-            onMerchantSearchChange={(merchant) => updateFilters({ merchant })}
-            dateFrom={filters.dateFrom}
-            onDateFromChange={(dateFrom) => updateFilters({ dateFrom })}
-            dateTo={filters.dateTo}
-            onDateToChange={(dateTo) => updateFilters({ dateTo })}
-            onClearAll={clearAllFilters}
-          />
-        </motion.div>
-
-        {/* Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Card>
-            <CardContent className="p-0">
-              {isLoading ? (
-                <div className="p-8">
-                  <div className="space-y-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="flex items-center space-x-4">
-                        <div className="h-4 w-4 bg-muted animate-pulse rounded" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-muted animate-pulse rounded w-1/4" />
-                          <div className="h-3 bg-muted animate-pulse rounded w-1/6" />
-                        </div>
-                        <div className="h-4 bg-muted animate-pulse rounded w-16" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <TransactionTable
-                  transactions={filteredTransactions}
-                  sortBy={filters.sortBy}
-                  sortOrder={filters.sortOrder}
-                  onSort={(column) => {
-                    const newOrder = filters.sortBy === column && filters.sortOrder === 'asc' ? 'desc' : 'asc'
-                    updateFilters({ sortBy: column, sortOrder: newOrder })
-                  }}
-                  density={filters.density}
-                  onRowClick={handleRowClick}
-                  selectedTransactionId={selectedTransaction?.id}
+        <div className="grid grid-cols-12 gap-6">
+          {/* Filter rail (left, col 1-3 on desktop; collapsible on mobile) */}
+          <div className="col-span-12 lg:col-span-3">
+            <Card className="card-elevated sticky top-24">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Filters</CardTitle>
+                <CardDescription>Narrow down your transactions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TransactionFilters
+                  categories={availableCategories}
+                  selectedCategories={filters.categories}
+                  onCategoryToggle={toggleCategory}
+                  merchantSearch={filters.merchant}
+                  onMerchantSearchChange={(merchant) => updateFilters({ merchant })}
+                  dateFrom={filters.dateFrom}
+                  onDateFromChange={(dateFrom) => updateFilters({ dateFrom })}
+                  dateTo={filters.dateTo}
+                  onDateToChange={(dateTo) => updateFilters({ dateTo })}
+                  onClearAll={clearAllFilters}
                 />
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Table (col 4-12) */}
+          <div className="col-span-12 lg:col-span-9">
+            <Card className="card-elevated">
+              <CardContent className="p-0">
+                {isLoading ? (
+                  <div className="p-8">
+                    <div className="space-y-4">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="flex items-center space-x-4">
+                          <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-muted animate-pulse rounded w-1/4" />
+                            <div className="h-3 bg-muted animate-pulse rounded w-1/6" />
+                          </div>
+                          <div className="h-4 bg-muted animate-pulse rounded w-16" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <TransactionTable
+                    transactions={filteredTransactions}
+                    sortBy={filters.sortBy}
+                    sortOrder={filters.sortOrder}
+                    onSort={(column) => {
+                      const newOrder = filters.sortBy === column && filters.sortOrder === 'asc' ? 'desc' : 'asc'
+                      updateFilters({ sortBy: column, sortOrder: newOrder })
+                    }}
+                    density={filters.density}
+                    onRowClick={handleRowClick}
+                    selectedTransactionId={selectedTransaction?.id}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         {/* Details Drawer */}
         <TransactionDetailsDrawer

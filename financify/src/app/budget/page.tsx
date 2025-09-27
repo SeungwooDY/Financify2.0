@@ -74,30 +74,26 @@ function BudgetContent() {
   }
 
   return (
-    <main className="container-5xl py-8">
-      <div className="space-y-6">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <h1 className="text-3xl font-bold tracking-tight text-balance w-full force-normal-wrap">
-            {mode === 'budget' ? 'Budget Planning' : 'Budget Maintenance'}
-          </h1>
-          <p className="text-muted-foreground mt-2 text-pretty w-full force-normal-wrap">
+    <main className="min-h-screen">
+      <div className="max-w-[1264px] mx-auto px-6 py-12">
+        <div className="mb-8">
+          <Heading as="h1" size="4xl" className="mb-4 text-balance">
+            Budget Copilot
+          </Heading>
+          <Text size="lg" color="muted" className="max-w-2xl">
             {mode === 'budget' 
               ? 'Set new spending limits and track your progress toward financial goals'
               : 'Monitor your current spending patterns and maintain healthy financial habits'
             }
-          </p>
-        </motion.div>
+          </Text>
+        </div>
 
-        {/* Mode Toggle */}
+        {/* Mode switcher: Budget vs Maintain (chips) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
+          className="mb-8"
         >
           <BudgetModeToggle
             mode={mode}
@@ -106,9 +102,9 @@ function BudgetContent() {
         </motion.div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Nudges and Target Caps */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* Personalized Nudges */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -146,20 +142,21 @@ function BudgetContent() {
           </motion.div>
         </div>
 
-        {/* Month-over-Month Progress Hint */}
+        {/* Supportive, non-judgmental tone message */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.5 }}
+          className="mt-12"
         >
-          <Card>
-            <CardContent className="p-6">
+          <Card className="card-glass">
+            <CardContent className="p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">
+                  <h3 className="text-xl font-semibold text-text mb-2">
                     {mode === 'budget' ? 'Ready to start budgeting?' : 'Keep up the great work!'}
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-text-secondary">
                     {mode === 'budget' 
                       ? 'Based on your current spending patterns, we can help you create realistic budget categories that work for your lifestyle.'
                       : 'Your spending patterns look healthy. Continue tracking your expenses to maintain good financial habits.'
@@ -167,10 +164,10 @@ function BudgetContent() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-3xl font-bold text-accent-1 tabular-nums">
                     {monthMetrics.data.savingsRate.toFixed(1)}%
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-sm text-text-tertiary">
                     Current savings rate
                   </div>
                 </div>

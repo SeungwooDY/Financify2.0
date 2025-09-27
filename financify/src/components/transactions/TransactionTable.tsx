@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/Table"
+} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -180,31 +180,31 @@ export function TransactionTable({
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <TableRow className="border-b">
-              <TableHead className="w-[200px]">
+              <TableHead className="min-w-[180px] max-w-[300px]">
                 <SortButton column="merchant">
                   <Building2 className="h-4 w-4 mr-1" />
                   Merchant
                 </SortButton>
               </TableHead>
-              <TableHead className="w-[150px]">
+              <TableHead className="min-w-[120px] max-w-[200px]">
                 <SortButton column="category">
                   <Tag className="h-4 w-4 mr-1" />
                   Category
                 </SortButton>
               </TableHead>
-              <TableHead className="w-[120px]">
+              <TableHead className="min-w-[100px] max-w-[140px]">
                 <SortButton column="date">
                   <Calendar className="h-4 w-4 mr-1" />
                   Date
                 </SortButton>
               </TableHead>
-              <TableHead className="w-[120px] text-right">
+              <TableHead className="min-w-[100px] max-w-[140px] text-right">
                 <SortButton column="amount">
                   <DollarSign className="h-4 w-4 mr-1" />
                   Amount
                 </SortButton>
               </TableHead>
-              <TableHead className="w-[100px]">Status</TableHead>
+              <TableHead className="min-w-[80px] max-w-[120px]">Status</TableHead>
               <TableHead className="w-[60px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -247,14 +247,14 @@ export function TransactionTable({
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
                           <p 
-                            className="truncate-safe break-words font-medium text-foreground"
+                            className="flex-truncate font-medium text-foreground"
                             title={transaction.merchant || transaction.description}
                           >
                             {transaction.merchant || transaction.description}
                           </p>
                           {transaction.merchant && (
                             <p 
-                              className="text-xs text-muted-foreground truncate-safe break-words"
+                              className="text-xs text-muted-foreground flex-truncate"
                               title={transaction.description}
                             >
                               {transaction.description}
@@ -284,7 +284,7 @@ export function TransactionTable({
                       "text-muted-foreground",
                       density === 'compact' ? "py-2" : "py-4"
                     )}>
-                      <div className="text-sm">
+                      <div className="text-sm tabular-nums">
                         {new Date(transaction.date).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -298,14 +298,16 @@ export function TransactionTable({
                       "text-right",
                       density === 'compact' ? "py-2" : "py-4"
                     )}>
-                      <Money
-                        amount={transaction.amount.amount}
-                        currency={transaction.amount.currency}
-                        className={cn(
-                          "font-semibold",
-                          getAmountColor(transaction)
-                        )}
-                      />
+                      <div className="tabular-nums">
+                        <Money
+                          amount={transaction.amount.amount}
+                          currency={transaction.amount.currency}
+                          className={cn(
+                            "font-semibold",
+                            getAmountColor(transaction)
+                          )}
+                        />
+                      </div>
                     </TableCell>
 
                     {/* Status */}

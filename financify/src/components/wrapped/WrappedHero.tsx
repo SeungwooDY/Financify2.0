@@ -95,7 +95,7 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className={cn("relative min-h-screen py-12", className)}
+      className={cn("relative min-h-screen py-16 md:py-24", className)}
     >
       {/* Background Elements */}
       <AmbientRibbon />
@@ -105,29 +105,46 @@ export function WrappedHero({ metrics, className }: WrappedHeroProps) {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="inline-block mb-6"
+          >
+            <div className="px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 to-accent-1/10 border border-primary/20 backdrop-blur-sm">
+              <span className="text-sm font-semibold text-primary">
+                Financial Insights for {new Date(metrics.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
+            </div>
+          </motion.div>
+          
           <motion.h1
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-text via-accent-1 to-purple-600 bg-clip-text text-transparent mb-4"
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6"
           >
-            Your Financial Wrapped
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty"
-          >
-            Discover your spending patterns, top merchants, and financial insights for{" "}
-            <span className="font-semibold text-text">
-              {new Date(metrics.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            <span className="bg-gradient-to-r from-text via-accent-1 via-accent-2 to-accent-3 bg-clip-text text-transparent animate-gradient-x">
+              Your Financial
             </span>
+            <br />
+            <span className="bg-gradient-to-r from-accent-3 via-primary to-accent-1 bg-clip-text text-transparent animate-gradient-x" style={{ animationDelay: '0.5s' }}>
+              Wrapped
+            </span>
+          </motion.h1>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed text-pretty"
+          >
+            Discover your spending patterns, top merchants, and financial insights with beautiful visualizations and actionable analytics
           </motion.p>
         </motion.div>
 

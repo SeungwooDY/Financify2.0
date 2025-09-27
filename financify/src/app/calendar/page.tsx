@@ -157,25 +157,21 @@ function CalendarContent() {
   }
 
   return (
-    <main className="container-5xl py-8">
-      <div className="space-y-6">
-        {/* Header */}
+    <main className="min-h-screen">
+      <div className="max-w-[1264px] mx-auto px-6 py-12">
+        <div className="mb-8">
+          <Heading as="h1" size="4xl" className="mb-4 text-balance">Spending Heatmap</Heading>
+          <Text size="lg" color="muted" className="max-w-2xl">
+            Visualize your daily spending patterns and trends with an interactive calendar
+          </Text>
+        </div>
+
+        {/* Month header with mini legend */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-        >
-          <h1 className="text-3xl font-bold tracking-tight text-balance w-full force-normal-wrap">Financial Calendar</h1>
-          <p className="text-muted-foreground mt-2 text-pretty w-full max-w-none force-normal-wrap">
-            Visualize your daily spending patterns and trends
-          </p>
-        </motion.div>
-
-        {/* Calendar Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          className="mb-8"
         >
           <CalendarHeader
             currentDate={currentDate}
@@ -185,50 +181,29 @@ function CalendarContent() {
           />
         </motion.div>
 
-        {/* Calendar Grid and Legend */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Calendar Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            className="lg:col-span-3"
-          >
-            <Card>
-              <CardContent className="p-6">
-                <CalendarGrid
-                  monthMetrics={mockMonthMetrics}
-                  currentDate={currentDate}
-                  onDayClick={handleDayClick}
-                />
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Legend */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-            className="lg:col-span-1"
-          >
-            <SpendingLegend
-              quantiles={{
-                q25: 25,
-                q50: 50,
-                q75: 100,
-                q90: 200,
-                max: 500
-              }}
-            />
-          </motion.div>
-        </div>
+        {/* Calendar Grid 7×5/6 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="mb-8"
+        >
+          <Card className="card-elevated">
+            <CardContent className="p-6">
+              <CalendarGrid
+                monthMetrics={mockMonthMetrics}
+                currentDate={currentDate}
+                onDayClick={handleDayClick}
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* Summary Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
         >
           <CalendarSummary
             monthMetrics={mockMonthMetrics}

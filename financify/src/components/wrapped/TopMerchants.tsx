@@ -1,219 +1,136 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import React from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { MonthMetrics } from "@/lib/types"
-import { formatCurrency } from "@/lib/api"
-import { cn } from "@/lib/utils"
-import { Store, CreditCard, MapPin } from "lucide-react"
+import { getCategoryColor } from "@/lib/theme"
+import { 
+  Store,
+  TrendingUp,
+  MapPin,
+  Clock,
+  Home
+} from "lucide-react"
 
 interface TopMerchantsProps {
   metrics: MonthMetrics
   className?: string
 }
 
-// Generate mock merchant data based on category breakdown
-function generateMerchantData(metrics: MonthMetrics) {
-  const merchants = [
-    { name: "Amazon", category: "shopping", amount: 0, transactions: 0, location: "Online" },
-    { name: "Starbucks", category: "food", amount: 0, transactions: 0, location: "Local" },
-    { name: "Shell", category: "transportation", amount: 0, transactions: 0, location: "Local" },
-    { name: "Netflix", category: "entertainment", amount: 0, transactions: 0, location: "Online" },
-    { name: "Target", category: "shopping", amount: 0, transactions: 0, location: "Local" },
-    { name: "Uber", category: "transportation", amount: 0, transactions: 0, location: "Online" },
-    { name: "Chipotle", category: "food", amount: 0, transactions: 0, location: "Local" },
-    { name: "Spotify", category: "entertainment", amount: 0, transactions: 0, location: "Online" },
-    { name: "Walmart", category: "shopping", amount: 0, transactions: 0, location: "Local" },
-    { name: "Apple", category: "shopping", amount: 0, transactions: 0, location: "Online" }
-  ]
-
-  // Distribute spending across merchants based on categories
-  metrics.categoryBreakdown.forEach(categoryData => {
-    const categoryMerchants = merchants.filter(m => m.category === categoryData.category)
-    if (categoryMerchants.length > 0) {
-      const amountPerMerchant = categoryData.amount.amount / categoryMerchants.length
-      const transactionsPerMerchant = Math.ceil(categoryData.transactionCount / categoryMerchants.length)
-      
-      categoryMerchants.forEach(merchant => {
-        merchant.amount = amountPerMerchant
-        merchant.transactions = transactionsPerMerchant
-      })
-    }
-  })
-
-  return merchants
-    .filter(m => m.amount > 0)
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 6)
-}
-
-const MERCHANT_ICONS: Record<string, React.ReactNode> = {
-  "Amazon": <Store className="h-4 w-4" />,
-  "Starbucks": <Store className="h-4 w-4" />,
-  "Shell": <Store className="h-4 w-4" />,
-  "Netflix": <CreditCard className="h-4 w-4" />,
-  "Target": <Store className="h-4 w-4" />,
-  "Uber": <CreditCard className="h-4 w-4" />,
-  "Chipotle": <Store className="h-4 w-4" />,
-  "Spotify": <CreditCard className="h-4 w-4" />,
-  "Walmart": <Store className="h-4 w-4" />,
-  "Apple": <CreditCard className="h-4 w-4" />
-}
-
 export function TopMerchants({ metrics, className }: TopMerchantsProps) {
-  const merchantData = generateMerchantData(metrics)
-  const totalMerchantSpending = merchantData.reduce((sum, merchant) => sum + merchant.amount, 0)
+  // Mock merchant data based on categories for now
+  const merchants = metrics.categoryBreakdown.slice(0, 5).map((category) => ({
+    id: category.category,
+    name: getMerchantName(category.category),
+    category: category.category,
+    amount: category.amount.amount,
+    transactionCount: category.transactionCount,
+    trend: Math.random() > 0.5 ? 'up' : 'down',
+    trendValue: Math.floor(Math.random() * 20) + 1,
+    location: Math.random() > 0.5 ? 'on-campus' : 'off-campus'
+  }))
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.4 }}
-      className={cn("relative", className)}
-    >
-      <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-sm shadow-xl">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-bold text-gray-900">
-            Top Merchants
-          </CardTitle>
-          <p className="text-sm text-gray-600">
-            Where you spent the most this month
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Merchants List */}
-          <div className="space-y-3">
-            {merchantData.map((merchant, index) => {
-              const percentage = totalMerchantSpending > 0 ? (merchant.amount / totalMerchantSpending) * 100 : 0
-              
-              return (
-                <motion.div
-                  key={merchant.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                  className="group"
+    <Card className={`card-elevated ${className}`}>
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold flex items-center">
+          <Store className="w-5 h-5 mr-2 text-accent-1" />
+          Top Merchants
+        </CardTitle>
+        <CardDescription>Your most frequented places</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {merchants.map((merchant, index) => {
+            const categoryColor = getCategoryColor(merchant.category)
+            
+            return (
+              <div 
+                key={merchant.id} 
+                className="flex items-center space-x-3 group cursor-pointer hover:bg-muted/20 rounded-lg p-2 -m-2 transition-all duration-200"
+              >
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+                  style={{ 
+                    backgroundColor: `${categoryColor.base}15`,
+                    border: `1px solid ${categoryColor.base}30`
+                  }}
                 >
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 p-2 bg-white rounded-lg shadow-sm">
-                        {MERCHANT_ICONS[merchant.name] || <Store className="h-4 w-4" />}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 
-                            className="font-medium text-gray-900 truncate break-words"
-                            title={merchant.name}
-                          >
-                            {merchant.name}
-                          </h3>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <MapPin className="h-3 w-3" />
-                            <span className="truncate break-words" title={merchant.location}>{merchant.location}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <span>{merchant.transactions} transaction{merchant.transactions !== 1 ? 's' : ''}</span>
-                          <span>•</span>
-                          <span>{percentage.toFixed(1)}% of total</span>
-                        </div>
-                      </div>
+                  <span 
+                    className="text-sm font-semibold"
+                    style={{ color: categoryColor.base }}
+                  >
+                    {merchant.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="text-sm font-medium text-text truncate" title={merchant.name}>
+                      {merchant.name}
+                    </h4>
+                    <div className="flex items-center text-xs text-text-tertiary">
+                      {merchant.trend === 'up' ? (
+                        <TrendingUp className="w-3 h-3 mr-1 text-emerald-400" />
+                      ) : (
+                        <TrendingUp className="w-3 h-3 mr-1 text-red-400 rotate-180" />
+                      )}
+                      <span className={merchant.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}>
+                        {merchant.trendValue}%
+                      </span>
                     </div>
-                    
-                    <div className="text-right flex-shrink-0 ml-4">
-                      <div className="font-bold text-gray-900">
-                        {formatCurrency(merchant.amount, metrics.totalExpenses.currency)}
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2 text-xs text-text-tertiary">
+                      <div className="flex items-center">
+                        {merchant.location === 'on-campus' ? (
+                          <Home className="w-3 h-3 mr-1" />
+                        ) : (
+                          <MapPin className="w-3 h-3 mr-1" />
+                        )}
+                        <span className="capitalize">{merchant.category}</span>
                       </div>
-                      <div className="text-xs text-gray-500">
-                        {formatCurrency(merchant.amount / merchant.transactions, metrics.totalExpenses.currency, { showCents: false })} avg
+                      <div className="flex items-center">
+                        <Clock className="w-3 h-3 mr-1" />
+                        <span>{merchant.transactionCount} visits</span>
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          {/* Summary Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="pt-4 border-t border-gray-200"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">
-                  {merchantData.length}
                 </div>
-                <div className="text-xs text-blue-600">Unique Merchants</div>
-              </div>
-              
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">
-                  {formatCurrency(totalMerchantSpending, metrics.totalExpenses.currency, { showCents: false })}
+                
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-text tabular-nums">
+                    ${merchant.amount.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-text-tertiary">
+                    #{index + 1}
+                  </div>
                 </div>
-                <div className="text-xs text-green-600">Total Spent</div>
               </div>
-            </div>
-          </motion.div>
-
-          {/* Insights */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100"
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-gray-900 mb-1">Spending insight</p>
-                <p className="text-sm text-gray-600">
-                  You spent most at <span className="font-semibold text-gray-900">
-                    {merchantData[0]?.name}
-                  </span> with <span className="font-semibold text-gray-900">
-                    {merchantData[0]?.transactions}
-                  </span> transactions totaling <span className="font-semibold text-gray-900">
-                    {formatCurrency(merchantData[0]?.amount || 0, metrics.totalExpenses.currency)}
-                  </span>.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Screen reader fallback */}
-          <div className="sr-only">
-            <table>
-              <caption>Top merchants for {metrics.month}</caption>
-              <thead>
-                <tr>
-                  <th>Merchant</th>
-                  <th>Location</th>
-                  <th>Amount Spent</th>
-                  <th>Transaction Count</th>
-                  <th>Average per Transaction</th>
-                  <th>Percentage of Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {merchantData.map(merchant => (
-                  <tr key={merchant.name}>
-                    <td>{merchant.name}</td>
-                    <td>{merchant.location}</td>
-                    <td>{formatCurrency(merchant.amount, metrics.totalExpenses.currency)}</td>
-                    <td>{merchant.transactions}</td>
-                    <td>{formatCurrency(merchant.amount / merchant.transactions, metrics.totalExpenses.currency)}</td>
-                    <td>{((merchant.amount / totalMerchantSpending) * 100).toFixed(1)}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+            )
+          })}
+        </div>
+      </CardContent>
+    </Card>
   )
+}
+
+function getMerchantName(category: string): string {
+  const merchantMap: Record<string, string> = {
+    food: "Campus Dining",
+    books: "University Bookstore",
+    transportation: "Uber",
+    housing: "Student Housing",
+    shopping: "Target",
+    entertainment: "Netflix",
+    utilities: "Electric Company",
+    healthcare: "Student Health Center",
+    tuition: "University Bursar",
+    income: "Work Study",
+    refund: "Financial Aid",
+    other: "Miscellaneous"
+  }
+  
+  return merchantMap[category] || category
 }

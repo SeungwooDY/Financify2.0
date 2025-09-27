@@ -158,31 +158,33 @@ export function AppShell({ children }: AppShellProps) {
       {/* Top Navigation */}
       <motion.header
         className={cn(
-          "sticky top-0 z-50 w-full border-b border-border bg-paper/95 backdrop-blur supports-[backdrop-filter]:bg-paper/60",
-          isElevated && "shadow-elevated"
+          "sticky top-0 z-50 w-full border-b border-white/5 bg-paper/80 backdrop-blur-xl supports-[backdrop-filter]:bg-paper/40",
+          isElevated && "shadow-strong"
         )}
         initial={{ y: 0 }}
         animate={{ 
           y: 0,
-          boxShadow: isElevated ? "var(--shadow-elevated)" : "none"
+          boxShadow: isElevated ? "var(--shadow-strong)" : "none"
         }}
-        transition={{ duration: 0.18, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="container-5xl">
+        <div className="max-w-[1264px] mx-auto px-6">
           <div className="flex h-16 items-center justify-between">
             {/* Brand */}
             <Link 
               href="/" 
-              className="flex items-center space-x-2 text-text hover:text-accent-1 transition-colors focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-md px-2 py-1"
+              className="flex items-center space-x-3 text-text hover:text-accent-1 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-xl px-3 py-2 group"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-accent-1 to-accent-2 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">F</span>
+              <div className="w-10 h-10 bg-gradient-to-br from-accent-1 via-accent-2 to-accent-3 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
+                <span className="text-white font-bold text-lg">F</span>
               </div>
-              <span className="font-bold text-xl">Financify</span>
+              <span className="font-bold text-2xl bg-gradient-to-r from-text to-accent-1 bg-clip-text text-transparent">
+                Financify
+              </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav id="main-navigation" className="hidden md:flex items-center space-x-1" aria-label="Main navigation">
+            <nav id="main-navigation" className="hidden md:flex items-center space-x-2" aria-label="Main navigation">
               {navItems.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
@@ -192,15 +194,18 @@ export function AppShell({ children }: AppShellProps) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2",
+                      "flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 group",
                       isActive
-                        ? "bg-accent-1/10 text-accent-1"
-                        : "text-text-secondary hover:text-text hover:bg-muted"
+                        ? "bg-gradient-to-r from-accent-1/20 to-accent-1/10 text-accent-1 shadow-lg border border-accent-1/20"
+                        : "text-text-secondary hover:text-text hover:bg-muted/50 hover:shadow-md"
                     )}
                     aria-current={isActive ? "page" : undefined}
                     title={item.description}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className={cn(
+                      "h-4 w-4 transition-all duration-300",
+                      isActive ? "text-accent-1" : "group-hover:text-accent-1"
+                    )} />
                     <span>{item.label}</span>
                   </Link>
                 )
@@ -208,12 +213,14 @@ export function AppShell({ children }: AppShellProps) {
             </nav>
 
             {/* Month Selector */}
-            <div className="hidden md:flex items-center space-x-2">
-              <Calendar className="h-4 w-4 text-text-secondary" />
+            <div className="hidden md:flex items-center space-x-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-accent-1/10 to-accent-1/5 border border-accent-1/20">
+                <Calendar className="h-4 w-4 text-accent-1" />
+              </div>
               <select
                 value={currentMonth}
                 onChange={(e) => handleMonthChange(e.target.value)}
-                className="bg-transparent text-sm font-medium text-text border-none outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-md px-2 py-1 cursor-pointer"
+                className="bg-transparent text-sm font-semibold text-text border-none outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-lg px-3 py-2 cursor-pointer hover:bg-muted/30 transition-all duration-200"
                 aria-label="Select month"
               >
                 {monthOptions.map((option) => (
@@ -228,7 +235,7 @@ export function AppShell({ children }: AppShellProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden rounded-xl hover:bg-muted/50 transition-all duration-300"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle mobile menu"
             >
@@ -251,14 +258,16 @@ export function AppShell({ children }: AppShellProps) {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             style={{ overflow: "hidden" }}
           >
-            <div className="border-t border-border py-4 space-y-2">
+            <div className="border-t border-border/50 py-6 space-y-3">
               {/* Mobile Month Selector */}
-              <div className="flex items-center space-x-2 px-4 py-2">
-                <Calendar className="h-4 w-4 text-text-secondary" />
+              <div className="flex items-center space-x-3 px-4 py-3 bg-muted/30 rounded-xl mx-4">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-accent-1/10 to-accent-1/5 border border-accent-1/20">
+                  <Calendar className="h-4 w-4 text-accent-1" />
+                </div>
                 <select
                   value={currentMonth}
                   onChange={(e) => handleMonthChange(e.target.value)}
-                  className="flex-1 bg-transparent text-sm font-medium text-text border-none outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-md px-2 py-1 cursor-pointer"
+                  className="flex-1 bg-transparent text-sm font-semibold text-text border-none outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 rounded-lg px-2 py-1 cursor-pointer"
                   aria-label="Select month"
                 >
                   {monthOptions.map((option) => (
@@ -279,18 +288,30 @@ export function AppShell({ children }: AppShellProps) {
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-md text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2",
+                      "flex items-center space-x-4 px-4 py-4 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-border-focus focus:ring-offset-2 mx-4 group",
                       isActive
-                        ? "bg-accent-1/10 text-accent-1"
-                        : "text-text-secondary hover:text-text hover:bg-muted"
+                        ? "bg-gradient-to-r from-accent-1/20 to-accent-1/10 text-accent-1 shadow-lg border border-accent-1/20"
+                        : "text-text-secondary hover:text-text hover:bg-muted/50"
                     )}
                     aria-current={isActive ? "page" : undefined}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Icon className="h-4 w-4" />
+                    <div className={cn(
+                      "p-2 rounded-lg transition-all duration-300",
+                      isActive 
+                        ? "bg-accent-1/20" 
+                        : "bg-muted/50 group-hover:bg-accent-1/10"
+                    )}>
+                      <Icon className={cn(
+                        "h-5 w-5 transition-all duration-300",
+                        isActive ? "text-accent-1" : "group-hover:text-accent-1"
+                      )} />
+                    </div>
                     <div className="flex-1">
-                      <div>{item.label}</div>
-                      <div className="text-xs text-text-tertiary">{item.description}</div>
+                      <div className="font-semibold">{item.label}</div>
+                      <div className="text-xs text-text-tertiary group-hover:text-text-secondary transition-colors">
+                        {item.description}
+                      </div>
                     </div>
                   </Link>
                 )
@@ -306,7 +327,7 @@ export function AppShell({ children }: AppShellProps) {
       {/* Main Content */}
       <main 
         id="main-content" 
-        className="flex-1 container-12 section-spacing py-8" 
+        className="flex-1 py-12 md:py-16" 
         role="main" 
         aria-label="Main content"
         tabIndex={-1}
