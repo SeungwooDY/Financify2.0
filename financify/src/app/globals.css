@@ -18,6 +18,72 @@
   }
 }
 
+/* Typography and text wrapping utilities */
+@layer utilities {
+  /* Text wrapping improvements */
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  .text-hyphens {
+    hyphens: auto;
+  }
+  
+  /* Optimal line length for readability */
+  .prose-optimal {
+    max-width: 70ch;
+    line-height: 1.6;
+  }
+  
+  /* Tabular numbers for consistent alignment */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Safe truncation with tooltip support */
+  .truncate-safe {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Break long words but preserve readability */
+  .break-words-safe {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Layout system */
+@layer components {
+  .container-12 {
+    max-width: 1264px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .container-12 {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  .card-standard {
+    @apply rounded-2xl border border-black/5 shadow-[0_6px_24px_rgba(2,6,23,0.08)] p-6 md:p-8;
+  }
+  
+  .section-spacing {
+    @apply space-y-8 md:space-y-12;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

@@ -1,8 +1,11 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
+
+export const dynamic = 'force-dynamic'
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import { Heading, Text } from "@/components/ui/typography"
 import { useTransactions } from "@/lib/hooks/use-transactions"
 import { useTransactionFilters } from "@/lib/hooks/use-transaction-filters"
 import { 
@@ -110,17 +113,15 @@ export default function TransactionsPage() {
 
   if (error) {
     return (
-      <main className="container-5xl py-8">
-        <Card>
-          <CardContent className="p-12 text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Error Loading Transactions</h2>
-            <p className="text-muted-foreground">
-              There was a problem loading your transactions. Please try again.
-            </p>
-          </CardContent>
-        </Card>
-      </main>
+      <Card className="card-standard">
+        <CardContent className="p-12 text-center">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <Heading as="h2" size="xl" className="mb-2">Error Loading Transactions</Heading>
+          <Text color="muted">
+            There was a problem loading your transactions. Please try again.
+          </Text>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -133,10 +134,10 @@ export default function TransactionsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground mt-2">
+          <Heading as="h1" size="4xl" className="mb-2 text-balance">Transactions</Heading>
+          <Text color="muted" size="lg" className="text-pretty">
             View and manage all your financial transactions
-          </p>
+          </Text>
         </motion.div>
 
         {/* Toolbar */}

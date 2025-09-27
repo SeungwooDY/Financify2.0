@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, Suspense } from "react"
+
+export const dynamic = 'force-dynamic'
 import { motion } from "framer-motion"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMonthMetrics } from "@/lib/hooks"
@@ -11,9 +13,10 @@ import {
   SpendingLegend
 } from "@/components/calendar"
 import { Card, CardContent } from "@/components/ui/card"
+import { Heading, Text } from "@/components/ui/typography"
 import { AlertCircle } from "lucide-react"
 
-export default function CalendarPage() {
+function CalendarContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const month = searchParams.get('month') || '2025-08'
@@ -101,17 +104,15 @@ export default function CalendarPage() {
 
   if (error) {
     return (
-      <main className="container-5xl py-8">
-        <Card>
-          <CardContent className="p-12 text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Error Loading Calendar</h2>
-            <p className="text-muted-foreground">
-              There was a problem loading your calendar data. Please try again.
-            </p>
-          </CardContent>
-        </Card>
-      </main>
+      <Card className="card-standard">
+        <CardContent className="p-12 text-center">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <Heading as="h2" size="xl" className="mb-2">Error Loading Calendar</Heading>
+          <Text color="muted">
+            There was a problem loading your calendar data. Please try again.
+          </Text>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -164,8 +165,8 @@ export default function CalendarPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight">Financial Calendar</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold tracking-tight text-balance">Financial Calendar</h1>
+          <p className="text-muted-foreground mt-2 text-pretty">
             Visualize your daily spending patterns and trends
           </p>
         </motion.div>
@@ -235,5 +236,25 @@ export default function CalendarPage() {
         </motion.div>
       </div>
     </main>
+  )
+}
+
+export default function CalendarPage() {
+  return (
+    <Suspense fallback={
+      <main className="container-5xl py-8">
+        <div className="space-y-6">
+          <div className="h-8 bg-muted animate-pulse rounded w-64" />
+          <div className="h-32 bg-muted animate-pulse rounded" />
+          <div className="grid grid-cols-7 gap-px bg-muted/20 rounded-md overflow-hidden">
+            {Array.from({ length: 35 }).map((_, i) => (
+              <div key={i} className="aspect-square bg-muted/10 animate-pulse" />
+            ))}
+          </div>
+        </div>
+      </main>
+    }>
+      <CalendarContent />
+    </Suspense>
   )
 }

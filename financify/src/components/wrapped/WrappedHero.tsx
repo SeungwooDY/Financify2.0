@@ -25,13 +25,13 @@ function ConfettiAnimation() {
           key={i}
           className="absolute w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
           initial={{ 
-            x: Math.random() * window.innerWidth,
+            x: Math.random() * 1200, // Use fixed width instead of window.innerWidth
             y: -10,
             rotate: 0,
             opacity: 1
           }}
           animate={{
-            y: window.innerHeight + 10,
+            y: 800, // Use fixed height instead of window.innerHeight
             rotate: 360,
             opacity: 0
           }}

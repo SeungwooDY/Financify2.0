@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
@@ -85,6 +85,12 @@ export function AppShell({ children }: AppShellProps) {
 
   // Update month in URL when changed
   const updateMonthInUrl = useCallback((month: string) => {
+    const currentMonthParam = searchParams.get('month')
+    const currentMonth = currentMonthParam || new Date().toISOString().slice(0, 7)
+    
+    // Prevent unnecessary updates
+    if (month === currentMonth) return
+    
     const params = new URLSearchParams(searchParams.toString())
     if (month === new Date().toISOString().slice(0, 7)) {
       params.delete('month')
@@ -104,11 +110,8 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   // Generate month options (current month ± 12 months)
-  const generateMonthOptions = () => {
+  const monthOptions = useMemo(() => {
     const options = []
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
-    const currentMonth = currentDate.getMonth()
     
     // Generate months from 2024-01 to 2025-12
     for (let year = 2024; year <= 2025; year++) {
@@ -124,14 +127,19 @@ export function AppShell({ children }: AppShellProps) {
     }
     
     return options
-  }
+  }, [])
 
-  const monthOptions = generateMonthOptions()
-
-  // Close mobile menu on route change
+  // Close mobile menu on route change and manage focus
   useEffect(() => {
-    setIsMobileMenuOpen(false)
-  }, [pathname])
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false)
+      // Move focus to main content after navigation
+      const mainContent = document.getElementById('main-content')
+      if (mainContent) {
+        mainContent.focus()
+      }
+    }
+  }, [pathname, isMobileMenuOpen])
 
   // Sync month from URL on mount
   useEffect(() => {
@@ -296,7 +304,13 @@ export function AppShell({ children }: AppShellProps) {
       </motion.header>
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1" role="main" aria-label="Main content">
+      <main 
+        id="main-content" 
+        className="flex-1 container-12 section-spacing py-8" 
+        role="main" 
+        aria-label="Main content"
+        tabIndex={-1}
+      >
         {children}
       </main>
     </div>

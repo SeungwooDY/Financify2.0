@@ -27,6 +27,12 @@ import {
   generateChartDescription,
   // type ColorScale
 } from "./theme"
+import { 
+  enhancedChartTheme, 
+  formatCurrencyAxis as formatCurrencyAxisEnhanced, 
+  truncateLabel, 
+  generateChartDescription as generateChartDescriptionEnhanced 
+} from "./theme-enhanced"
 
 // ============================================================================
 // TYPES
@@ -175,7 +181,7 @@ export function VizBar({
   showTooltip = true,
   title,
   description,
-  onBarClick,
+  // onBarClick,
   // selectedIndex,
   responsive = true,
   containerWidth,
@@ -184,7 +190,7 @@ export function VizBar({
     ? getResponsiveDimensions(width, height, containerWidth)
     : { width, height }
 
-  const chartDescription = description || generateChartDescription('bar', data, title)
+  const chartDescription = description || generateChartDescriptionEnhanced('bar', data, title)
 
   return (
     <div className={cn("w-full", className)}>
@@ -224,21 +230,21 @@ export function VizBar({
             
             <XAxis
               dataKey={xKey}
-              stroke={chartTheme.axis.stroke}
-              strokeWidth={chartTheme.axis.strokeWidth}
-              fontSize={chartTheme.axis.tick.fontSize}
-              fontFamily={chartTheme.axis.fontFamily}
-              tick={{ fill: chartTheme.axis.tick.fill }}
-              tickFormatter={formatDateAxis}
+              stroke={enhancedChartTheme.axis.stroke}
+              strokeWidth={enhancedChartTheme.axis.strokeWidth}
+              fontSize={enhancedChartTheme.axis.tick.fontSize}
+              fontFamily={enhancedChartTheme.axis.fontFamily}
+              tick={{ fill: enhancedChartTheme.axis.tick.fill }}
+              tickFormatter={(value) => truncateLabel(String(value), 12)}
             />
             
             <YAxis
-              stroke={chartTheme.axis.stroke}
-              strokeWidth={chartTheme.axis.strokeWidth}
-              fontSize={chartTheme.axis.tick.fontSize}
-              fontFamily={chartTheme.axis.fontFamily}
-              tick={{ fill: chartTheme.axis.tick.fill }}
-              tickFormatter={(value) => formatCurrencyValue(value)}
+              stroke={enhancedChartTheme.axis.stroke}
+              strokeWidth={enhancedChartTheme.axis.strokeWidth}
+              fontSize={enhancedChartTheme.axis.tick.fontSize}
+              fontFamily={enhancedChartTheme.axis.fontFamily}
+              tick={{ fill: enhancedChartTheme.axis.tick.fill }}
+              tickFormatter={formatCurrencyAxisEnhanced}
             />
             
             {showTooltip && (
@@ -308,7 +314,7 @@ export function VizLine({
   showTooltip = true,
   title,
   description,
-  onPointClick,
+  // onPointClick,
   // selectedIndex,
   responsive = true,
   containerWidth,

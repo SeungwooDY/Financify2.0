@@ -1,8 +1,11 @@
 "use client"
 
-import React from "react"
+import React, { Suspense } from "react"
+
+export const dynamic = 'force-dynamic'
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import { Heading, Text } from "@/components/ui/typography"
 import { useMonthMetrics, useBudgetMode } from "@/lib/hooks"
 import { 
   BudgetModeToggle,
@@ -13,7 +16,7 @@ import {
 import { AlertCircle, PiggyBank } from "lucide-react"
 import { useSearchParams } from "next/navigation"
 
-export default function BudgetPage() {
+function BudgetContent() {
   const searchParams = useSearchParams()
   const month = searchParams.get('month') || '2025-08'
   
@@ -22,17 +25,15 @@ export default function BudgetPage() {
 
   if (error) {
     return (
-      <main className="container-5xl py-8">
-        <Card>
-          <CardContent className="p-12 text-center">
-            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Error Loading Budget Data</h2>
-            <p className="text-muted-foreground">
-              There was a problem loading your budget information. Please try again.
-            </p>
-          </CardContent>
-        </Card>
-      </main>
+      <Card className="card-standard">
+        <CardContent className="p-12 text-center">
+          <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <Heading as="h2" size="xl" className="mb-2">Error Loading Budget Data</Heading>
+          <Text color="muted">
+            There was a problem loading your budget information. Please try again.
+          </Text>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -81,10 +82,10 @@ export default function BudgetPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-balance">
             {mode === 'budget' ? 'Budget Planning' : 'Budget Maintenance'}
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-pretty">
             {mode === 'budget' 
               ? 'Set new spending limits and track your progress toward financial goals'
               : 'Monitor your current spending patterns and maintain healthy financial habits'
@@ -179,5 +180,29 @@ export default function BudgetPage() {
         </motion.div>
       </div>
     </main>
+  )
+}
+
+export default function BudgetPage() {
+  return (
+    <Suspense fallback={
+      <main className="container-5xl py-8">
+        <div className="space-y-6">
+          <div className="h-8 bg-muted animate-pulse rounded w-64" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="h-32 bg-muted animate-pulse rounded" />
+              <div className="h-48 bg-muted animate-pulse rounded" />
+            </div>
+            <div className="space-y-4">
+              <div className="h-48 bg-muted animate-pulse rounded" />
+              <div className="h-64 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
+        </div>
+      </main>
+    }>
+      <BudgetContent />
+    </Suspense>
   )
 }

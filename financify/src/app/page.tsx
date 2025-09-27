@@ -1,9 +1,13 @@
 "use client"
 
+import { Suspense } from "react"
+
+export const dynamic = 'force-dynamic'
 import { WrappedHero } from "@/components/wrapped"
 import { useMonthMetrics } from "@/lib/hooks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Heading, Text } from "@/components/ui/typography"
 import { useTransactions } from "@/lib/hooks"
 import { Transaction } from "@/lib/types"
 import { 
@@ -15,7 +19,7 @@ import {
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
-export default function DashboardPage() {
+function DashboardContent() {
   const searchParams = useSearchParams()
   const month = searchParams.get('month') || '2025-08'
   
@@ -38,28 +42,30 @@ export default function DashboardPage() {
   // Show error state if no metrics available
   if (!monthMetrics?.data) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight mb-4">No Data Available</h1>
-          <p className="text-muted-foreground mb-6">We couldn&apos;t load your financial data. Please try uploading some transactions first.</p>
+          <Heading as="h1" size="4xl" className="mb-4 text-balance">No Data Available</Heading>
+          <Text color="muted" className="mb-6 text-pretty">
+            We couldn&apos;t load your financial data. Please try uploading some transactions first.
+          </Text>
           <Button asChild>
             <Link href="/upload">Upload Transactions</Link>
           </Button>
         </div>
-      </main>
+      </div>
     )
   }
 
   return (
-    <main>
+    <>
       {/* Wrapped Hero Section */}
       <WrappedHero metrics={monthMetrics.data} />
 
       {/* Additional Dashboard Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="space-y-8 md:space-y-12">
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight mb-6">Quick Actions</h2>
+        <div>
+          <Heading as="h2" size="2xl" className="mb-6 text-balance">Quick Actions</Heading>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/upload">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -68,9 +74,9 @@ export default function DashboardPage() {
                   <Upload className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">
+                  <Text size="sm" color="muted">
                     Import your bank statements
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
             </Link>
@@ -82,9 +88,9 @@ export default function DashboardPage() {
                   <Receipt className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">
+                  <Text size="sm" color="muted">
                     Manage your transactions
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
             </Link>
@@ -96,9 +102,9 @@ export default function DashboardPage() {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">
+                  <Text size="sm" color="muted">
                     See your financial calendar
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
             </Link>
@@ -110,9 +116,9 @@ export default function DashboardPage() {
                   <PiggyBank className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xs text-muted-foreground">
+                  <Text size="sm" color="muted">
                     Plan and track your budget
-                  </p>
+                  </Text>
                 </CardContent>
               </Card>
             </Link>
@@ -137,13 +143,13 @@ export default function DashboardPage() {
                         transaction.type === 'income' ? 'bg-green-500' : 'bg-red-500'
                       }`} />
                       <div>
-                        <p className="text-sm font-medium">{transaction.description}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm font-medium truncate" title={transaction.description}>{transaction.description}</p>
+                        <p className="text-xs text-muted-foreground truncate" title={`${transaction.category} • ${new Date(transaction.date).toLocaleDateString()}`}>
                           {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <div className={`text-sm font-medium ${
+                    <div className={`text-sm font-medium tabular-nums ${
                       transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                     }`}>
                       {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount.amount).toLocaleString()}
@@ -162,6 +168,21 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your financial wrapped...</p>
+        </div>
+      </main>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }

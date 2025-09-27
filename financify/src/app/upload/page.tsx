@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+// import { Heading, Text } from "@/components/ui/typography"
 import { Upload, FileText, CheckCircle } from "lucide-react"
 import { useState } from "react"
 

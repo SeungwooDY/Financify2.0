@@ -23,8 +23,8 @@ import {
   Edit
 } from "lucide-react"
 import { Transaction, TransactionCategory } from "@/lib/types"
-import { formatCurrency } from "@/lib/api"
 import { cn } from "@/lib/utils"
+import { Money } from "@/components/ui/typography"
 
 interface TransactionTableProps {
   transactions: Transaction[]
@@ -111,11 +111,6 @@ export function TransactionTable({
     })
   }, [transactions, sortBy, sortOrder])
 
-  const formatAmount = (transaction: Transaction) => {
-    const amount = Math.abs(transaction.amount.amount)
-    const formatted = formatCurrency(amount, transaction.amount.currency, { showCents: false })
-    return transaction.type === 'income' ? `+${formatted}` : `-${formatted}`
-  }
 
   const getAmountColor = (transaction: Transaction) => {
     return transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
@@ -251,11 +246,17 @@ export function TransactionTable({
                     )}>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
-                          <p className="truncate font-medium text-foreground">
+                          <p 
+                            className="truncate-safe font-medium text-foreground"
+                            title={transaction.merchant || transaction.description}
+                          >
                             {transaction.merchant || transaction.description}
                           </p>
                           {transaction.merchant && (
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p 
+                              className="text-xs text-muted-foreground truncate-safe"
+                              title={transaction.description}
+                            >
                               {transaction.description}
                             </p>
                           )}
@@ -294,15 +295,17 @@ export function TransactionTable({
 
                     {/* Amount */}
                     <TableCell className={cn(
-                      "text-right font-mono tabular-nums",
+                      "text-right",
                       density === 'compact' ? "py-2" : "py-4"
                     )}>
-                      <div className={cn(
-                        "font-semibold",
-                        getAmountColor(transaction)
-                      )}>
-                        {formatAmount(transaction)}
-                      </div>
+                      <Money
+                        amount={transaction.amount.amount}
+                        currency={transaction.amount.currency}
+                        className={cn(
+                          "font-semibold",
+                          getAmountColor(transaction)
+                        )}
+                      />
                     </TableCell>
 
                     {/* Status */}
