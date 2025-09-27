@@ -17,11 +17,11 @@ interface TrendLineChartProps {
 // Generate mock daily spending data for the trend line
 function generateDailySpendingData(metrics: MonthMetrics) {
   const daysInMonth = new Date(metrics.month + '-01').getDate()
-  const data = []
+  const data: Array<{ day: string; date: string; spending: number; cumulative: number }> = []
   
   // Create a realistic spending pattern with some variation
   const baseDailyAmount = metrics.spendingPatterns.averageDailySpending.amount
-  const highestDayAmount = metrics.spendingPatterns.highestSpendingDay.amount.amount
+  // const highestDayAmount = metrics.spendingPatterns.highestSpendingDay.amount.amount
   
   for (let day = 1; day <= daysInMonth; day++) {
     // Add some realistic variation to daily spending
@@ -32,7 +32,7 @@ function generateDailySpendingData(metrics: MonthMetrics) {
     const amount = Math.max(0, baseDailyAmount * (1 + variation) * weekendMultiplier)
     
     data.push({
-      day: day,
+      day: day.toString(),
       date: `${metrics.month}-${day.toString().padStart(2, '0')}`,
       spending: Math.round(amount),
       cumulative: data.length > 0 ? data[data.length - 1].cumulative + Math.round(amount) : Math.round(amount)

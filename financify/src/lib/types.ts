@@ -251,6 +251,18 @@ export interface MonthMetrics {
     }
   }
   
+  // Daily spending trends
+  trend_daily: {
+    date: string // YYYY-MM-DD format
+    totalSpending: Currency
+    transactionCount: number
+    categories: {
+      category: TransactionCategory
+      amount: Currency
+      percentage: number
+    }[]
+  }[]
+  
   // Alerts and insights
   alerts: {
     type: "overspend" | "underspend" | "unusual" | "goal_met" | "goal_missed"

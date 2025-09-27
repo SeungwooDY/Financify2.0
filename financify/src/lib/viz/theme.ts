@@ -321,7 +321,7 @@ export function getResponsiveDimensions(
 /**
  * Generate accessible color combinations
  */
-export function getAccessibleColors(background: string = 'hsl(var(--bg))'): string[] {
+export function getAccessibleColors(): string[] {
   // High contrast colors that work well with the background
   return [
     colorScales.primary[600],
@@ -338,7 +338,7 @@ export function getAccessibleColors(background: string = 'hsl(var(--bg))'): stri
  */
 export function generateChartDescription(
   chartType: 'bar' | 'line' | 'area' | 'pie',
-  data: any[],
+  data: Record<string, unknown>[],
   title?: string
 ): string {
   const dataPoints = data.length

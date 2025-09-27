@@ -432,7 +432,8 @@ export function generateMonthMetrics(month: string, transactions: Transaction[])
       }
     },
     alerts,
-    generatedAt: new Date().toISOString()
+    generatedAt: new Date().toISOString(),
+    trend_daily: [] // Will be populated by the calendar component
   }
 }
 

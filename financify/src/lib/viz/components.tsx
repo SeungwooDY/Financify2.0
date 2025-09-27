@@ -14,7 +14,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
+  // Cell,
 } from "recharts"
 import { cn } from "@/lib/utils"
 import { 
@@ -22,10 +22,10 @@ import {
   generateColorPalette, 
   formatCurrencyValue, 
   formatDateAxis,
-  formatPercentage,
+  // formatPercentage,
   getResponsiveDimensions,
   generateChartDescription,
-  type ColorScale
+  // type ColorScale
 } from "./theme"
 
 // ============================================================================
@@ -33,7 +33,7 @@ import {
 // ============================================================================
 
 export interface VizBarProps {
-  data: any[]
+  data: Record<string, unknown>[]
   xKey: string
   yKey: string
   width?: number
@@ -45,14 +45,14 @@ export interface VizBarProps {
   showTooltip?: boolean
   title?: string
   description?: string
-  onBarClick?: (data: any, index: number) => void
+  onBarClick?: (data: Record<string, unknown>, index: number) => void
   selectedIndex?: number
   responsive?: boolean
   containerWidth?: number
 }
 
 export interface VizLineProps {
-  data: any[]
+  data: Record<string, unknown>[]
   xKey: string
   yKey: string | string[]
   width?: number
@@ -64,7 +64,7 @@ export interface VizLineProps {
   showTooltip?: boolean
   title?: string
   description?: string
-  onPointClick?: (data: any, index: number) => void
+  onPointClick?: (data: Record<string, unknown>, index: number) => void
   selectedIndex?: number
   responsive?: boolean
   containerWidth?: number
@@ -79,9 +79,9 @@ export interface VizLineProps {
 
 interface CustomTooltipProps {
   active?: boolean
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   label?: string
-  formatter?: (value: any, name: string) => [string, string]
+  formatter?: (value: unknown, name: string) => [string, string]
   labelFormatter?: (label: string) => string
 }
 
@@ -102,19 +102,19 @@ function CustomTooltip({
       style={chartTheme.tooltip}
     >
       <p className="font-medium text-text mb-2">
-        {labelFormatter ? labelFormatter(label) : label}
+        {labelFormatter ? labelFormatter(label || '') : label}
       </p>
       {payload.map((entry, index) => (
         <div key={index} className="flex items-center gap-2 text-sm">
           <div 
             className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: entry.color }}
+            style={{ backgroundColor: entry.color as string }}
           />
           <span className="text-text-secondary">
-            {entry.dataKey}:
+            {entry.dataKey as string}:
           </span>
           <span className="font-mono tabular-nums text-text">
-            {formatter ? formatter(entry.value, entry.dataKey)[0] : entry.value}
+            {formatter ? formatter(entry.value, entry.dataKey as string)[0] : String(entry.value)}
           </span>
         </div>
       ))}
@@ -127,7 +127,7 @@ function CustomTooltip({
 // ============================================================================
 
 interface CustomLegendProps {
-  payload?: any[]
+  payload?: Record<string, unknown>[]
   verticalAlign?: 'top' | 'bottom'
   align?: 'left' | 'center' | 'right'
 }
@@ -147,10 +147,10 @@ function CustomLegend({ payload, verticalAlign = 'bottom', align = 'center' }: C
         <div key={index} className="flex items-center gap-2 text-sm">
           <div 
             className="w-3 h-3 rounded-full" 
-            style={{ backgroundColor: entry.color }}
+            style={{ backgroundColor: entry.color as string }}
           />
           <span className="text-text-secondary">
-            {entry.value}
+            {String(entry.value)}
           </span>
         </div>
       ))}
@@ -176,7 +176,7 @@ export function VizBar({
   title,
   description,
   onBarClick,
-  selectedIndex,
+  // selectedIndex,
   responsive = true,
   containerWidth,
 }: VizBarProps) {
@@ -201,7 +201,7 @@ export function VizBar({
           <BarChart
             data={data}
             margin={chartTheme.margin}
-            onClick={onBarClick}
+            // onClick={onBarClick}
           >
             {showGrid && (
               <CartesianGrid 
@@ -233,7 +233,7 @@ export function VizBar({
             {showTooltip && (
               <Tooltip
                 content={<CustomTooltip />}
-                formatter={(value) => [formatCurrencyValue(value), '']}
+                formatter={(value) => [formatCurrencyValue(Number(value)), '']}
                 labelFormatter={formatDateAxis}
               />
             )}
@@ -246,10 +246,10 @@ export function VizBar({
               dataKey={yKey}
               fill={colors[0]}
               radius={[4, 4, 0, 0]}
-              onClick={onBarClick}
+              // onClick={onBarClick}
               className={cn(
                 "transition-all duration-200 hover:opacity-80",
-                selectedIndex !== undefined && "opacity-50 hover:opacity-100"
+                // selectedIndex !== undefined && "opacity-50 hover:opacity-100"
               )}
             />
           </BarChart>
@@ -269,8 +269,8 @@ export function VizBar({
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td>{formatDateAxis(item[xKey])}</td>
-                <td>{formatCurrencyValue(item[yKey])}</td>
+                <td>{formatDateAxis(String(item[xKey]))}</td>
+                <td>{formatCurrencyValue(Number(item[yKey]))}</td>
               </tr>
             ))}
           </tbody>
@@ -298,7 +298,7 @@ export function VizLine({
   title,
   description,
   onPointClick,
-  selectedIndex,
+  // selectedIndex,
   responsive = true,
   containerWidth,
   type = 'line',
@@ -318,7 +318,7 @@ export function VizLine({
         <AreaChart
           data={data}
           margin={chartTheme.margin}
-          onClick={onPointClick}
+          // onClick={onPointClick}
         >
           {showGrid && (
             <CartesianGrid 
@@ -350,7 +350,7 @@ export function VizLine({
           {showTooltip && (
             <Tooltip
               content={<CustomTooltip />}
-              formatter={(value) => [formatCurrencyValue(value), '']}
+              formatter={(value) => [formatCurrencyValue(Number(value)), '']}
               labelFormatter={formatDateAxis}
             />
           )}
@@ -378,11 +378,11 @@ export function VizLine({
     }
 
     return (
-      <LineChart
-        data={data}
-        margin={chartTheme.margin}
-        onClick={onPointClick}
-      >
+          <LineChart
+            data={data}
+            margin={chartTheme.margin}
+            // onClick={onPointClick}
+          >
         {showGrid && (
           <CartesianGrid 
             strokeDasharray={chartTheme.grid.strokeDasharray}
@@ -413,7 +413,7 @@ export function VizLine({
         {showTooltip && (
           <Tooltip
             content={<CustomTooltip />}
-            formatter={(value) => [formatCurrencyValue(value), '']}
+            formatter={(value) => [formatCurrencyValue(Number(value)), '']}
             labelFormatter={formatDateAxis}
           />
         )}
@@ -468,9 +468,9 @@ export function VizLine({
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td>{formatDateAxis(item[xKey])}</td>
+                <td>{formatDateAxis(String(item[xKey]))}</td>
                 {yKeys.map(key => (
-                  <td key={key}>{formatCurrencyValue(item[key])}</td>
+                  <td key={key}>{formatCurrencyValue(Number(item[key]))}</td>
                 ))}
               </tr>
             ))}

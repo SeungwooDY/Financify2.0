@@ -1,7 +1,7 @@
 "use client"
 
 import { WrappedHero } from "@/components/wrapped"
-import { useMonthMetrics, useCurrentUser } from "@/lib/hooks"
+import { useMonthMetrics } from "@/lib/hooks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useTransactions } from "@/lib/hooks"
@@ -15,7 +15,7 @@ import {
 import Link from "next/link"
 
 export default function DashboardPage() {
-  const { data: user } = useCurrentUser()
+  // const { data: user } = useCurrentUser()
   const { data: monthMetrics, isLoading: metricsLoading } = useMonthMetrics()
   const { data: transactions } = useTransactions(1, 5)
 
@@ -37,7 +37,7 @@ export default function DashboardPage() {
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">No Data Available</h1>
-          <p className="text-gray-600 mb-6">We couldn't load your financial data. Please try uploading some transactions first.</p>
+          <p className="text-gray-600 mb-6">We couldn&apos;t load your financial data. Please try uploading some transactions first.</p>
           <Button asChild>
             <Link href="/upload">Upload Transactions</Link>
           </Button>

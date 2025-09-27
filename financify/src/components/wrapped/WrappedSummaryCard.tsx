@@ -156,12 +156,12 @@ export function WrappedSummaryCard({ metrics, className }: WrappedSummaryCardPro
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-gray-900 mb-1">This month's highlight</p>
+                <p className="text-sm font-medium text-gray-900 mb-1">This month&apos;s highlight</p>
                 <p className="text-sm text-gray-600">
                   You spent most on <span className="font-semibold text-gray-900">
                     {metrics.spendingPatterns.mostExpensiveCategory}
                   </span> and made <span className="font-semibold text-gray-900">
-                    {metrics.spendingPatterns.transactionCount}
+                    {metrics.categoryBreakdown.reduce((sum, cat) => sum + cat.transactionCount, 0)}
                   </span> transactions in <span className="font-semibold text-gray-900">
                     {metrics.spendingPatterns.mostFrequentCategory}
                   </span>.

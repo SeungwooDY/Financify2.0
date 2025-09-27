@@ -332,10 +332,11 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-bg text-text;
+    background-color: hsl(var(--bg));
+    color: hsl(var(--text));
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -343,39 +344,76 @@
 @layer components {
   /* Design System Component Styles */
   .card {
-    @apply rounded-lg border border-border bg-paper text-text shadow-card;
+    @apply rounded-lg border;
+    background-color: hsl(var(--paper));
+    color: hsl(var(--text));
+    box-shadow: var(--shadow-card);
   }
   
   .card-elevated {
-    @apply rounded-lg border border-border bg-paper-elevated text-text shadow-elevated;
+    @apply rounded-lg border;
+    background-color: hsl(var(--paper-elevated));
+    color: hsl(var(--text));
+    box-shadow: var(--shadow-elevated);
   }
   
   .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-bg;
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:pointer-events-none;
+    background-color: hsl(var(--bg));
+    color: hsl(var(--text));
   }
   
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
   }
   
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+  
+  .btn-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.8);
   }
   
   .btn-outline {
-    @apply border border-border hover:bg-accent-1/10 hover:text-accent-1;
+    @apply border;
+    border-color: hsl(var(--border));
   }
   
-  .btn-ghost {
-    @apply hover:bg-muted hover:text-text;
+  .btn-outline:hover {
+    background-color: hsl(var(--accent-1) / 0.1);
+    color: hsl(var(--accent-1));
+  }
+  
+  .btn-ghost:hover {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--text));
   }
   
   .btn-destructive {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+  }
+  
+  .btn-destructive:hover {
+    background-color: hsl(var(--destructive) / 0.9);
   }
   
   .input {
-    @apply flex h-10 w-full rounded-md border border-border bg-bg px-3 py-2 text-sm ring-offset-bg file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border-focus focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50;
+    background-color: hsl(var(--bg));
+    border-color: hsl(var(--border));
+    color: hsl(var(--text));
+  }
+  
+  .input::placeholder {
+    color: hsl(var(--muted-foreground));
   }
   
   .label {

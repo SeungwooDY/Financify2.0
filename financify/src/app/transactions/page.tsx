@@ -1,200 +1,234 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import React, { useState, useMemo } from "react"
+import { motion } from "framer-motion"
+import { Card, CardContent } from "@/components/ui/card"
 import { useTransactions } from "@/lib/hooks/use-transactions"
-import { Transaction } from "@/lib/types"
-import { useState } from "react"
-import { Search, Filter, Plus } from "lucide-react"
+import { useTransactionFilters } from "@/lib/hooks/use-transaction-filters"
+import { 
+  TransactionTable,
+  TransactionFilters,
+  TransactionDetailsDrawer,
+  TransactionToolbar
+} from "@/components/transactions"
+import { Transaction, TransactionCategory } from "@/lib/types"
+import { AlertCircle } from "lucide-react"
 
 export default function TransactionsPage() {
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState("")
-  const { data: transactionsResponse, isLoading, error } = useTransactions(page, 10)
-  const transactions = transactionsResponse?.data
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const filteredTransactions = transactions?.filter((transaction: Transaction) =>
-    transaction.description.toLowerCase().includes(search.toLowerCase()) ||
-    transaction.category.toLowerCase().includes(search.toLowerCase())
-  ) || []
+  // Get all transactions (no pagination for now)
+  const { data: transactionsResponse, isLoading, error } = useTransactions(1, 1000)
+  const allTransactions = useMemo(() => transactionsResponse?.data || [], [transactionsResponse?.data])
 
-  const formatAmount = (transaction: Transaction) => {
-    const amount = Math.abs(transaction.amount.amount)
-    const formatted = amount.toLocaleString()
-    return transaction.type === 'income' ? `+$${formatted}` : `-$${formatted}`
+  // URL state management
+  const {
+    filters,
+    toggleCategory,
+    clearAllFilters,
+    updateFilters
+  } = useTransactionFilters()
+
+  // Filter transactions based on URL state
+  const filteredTransactions = useMemo(() => {
+    return allTransactions.filter((transaction: Transaction) => {
+      // Category filter
+      if (filters.categories.length > 0 && !filters.categories.includes(transaction.category)) {
+        return false
+      }
+
+      // Merchant filter
+      if (filters.merchant) {
+        const merchantText = (transaction.merchant || transaction.description).toLowerCase()
+        if (!merchantText.includes(filters.merchant.toLowerCase())) {
+          return false
+        }
+      }
+
+      // Date range filter
+      if (filters.dateFrom) {
+        const transactionDate = new Date(transaction.date)
+        const fromDate = new Date(filters.dateFrom)
+        if (transactionDate < fromDate) {
+          return false
+        }
+      }
+
+      if (filters.dateTo) {
+        const transactionDate = new Date(transaction.date)
+        const toDate = new Date(filters.dateTo)
+        if (transactionDate > toDate) {
+          return false
+        }
+      }
+
+      return true
+    })
+  }, [allTransactions, filters])
+
+  // Get unique categories for filter options
+  const availableCategories = useMemo(() => {
+    const categories = new Set<TransactionCategory>()
+    allTransactions.forEach(transaction => {
+      categories.add(transaction.category)
+    })
+    return Array.from(categories)
+  }, [allTransactions])
+
+  const handleRowClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction)
+    setIsDrawerOpen(true)
   }
 
-  const getAmountColor = (transaction: Transaction) => {
-    return transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+  const handleRecategorize = (transactionId: string, newCategory: TransactionCategory) => {
+    // TODO: Implement recategorization API call
+    console.log('Recategorizing transaction:', transactionId, 'to:', newCategory)
+    // For now, just close the drawer
+    setIsDrawerOpen(false)
+  }
+
+  const handleAddTransaction = () => {
+    // TODO: Implement add transaction flow
+    console.log('Add transaction clicked')
+  }
+
+  const handleImportTransactions = () => {
+    // TODO: Implement import flow
+    console.log('Import transactions clicked')
+  }
+
+  const handleExportTransactions = () => {
+    // TODO: Implement export flow
+    console.log('Export transactions clicked')
+  }
+
+  const handleSettings = () => {
+    // TODO: Implement settings
+    console.log('Settings clicked')
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 py-8">
-          <Card>
-            <CardContent className="p-6">
-              <p className="text-center text-muted-foreground">
-                Error loading transactions. Please try again.
-              </p>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
+      <main className="container-5xl py-8">
+        <Card>
+          <CardContent className="p-12 text-center">
+            <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-lg font-semibold mb-2">Error Loading Transactions</h2>
+            <p className="text-muted-foreground">
+              There was a problem loading your transactions. Please try again.
+            </p>
+          </CardContent>
+        </Card>
+      </main>
     )
   }
 
   return (
     <main className="container-5xl py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text">Transactions</h1>
-        <p className="text-text-secondary mt-2">View and manage all your financial transactions.</p>
-      </div>
-        <div className="mb-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
           <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground">
-            View and manage your financial transactions
+          <p className="text-muted-foreground mt-2">
+            View and manage all your financial transactions
           </p>
-        </div>
+        </motion.div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button variant="outline">
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
-              </Button>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Transaction
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Toolbar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <TransactionToolbar
+            totalCount={allTransactions.length}
+            filteredCount={filteredTransactions.length}
+            density={filters.density}
+            onDensityChange={(density) => updateFilters({ density })}
+            onAddTransaction={handleAddTransaction}
+            onImportTransactions={handleImportTransactions}
+            onExportTransactions={handleExportTransactions}
+            onSettings={handleSettings}
+          />
+        </motion.div>
 
-        {/* Transactions Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-            <CardDescription>
-              {filteredTransactions.length} transaction(s) found
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <div className="h-4 w-4 bg-muted animate-pulse rounded" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-muted animate-pulse rounded w-1/4" />
-                      <div className="h-3 bg-muted animate-pulse rounded w-1/6" />
-                    </div>
-                    <div className="h-4 bg-muted animate-pulse rounded w-16" />
-                  </div>
-                ))}
-              </div>
-            ) : filteredTransactions.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTransactions.map((transaction: Transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">
-                        {transaction.description}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg">📊</span>
-                          <span>{transaction.category}</span>
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <TransactionFilters
+            categories={availableCategories}
+            selectedCategories={filters.categories}
+            onCategoryToggle={toggleCategory}
+            merchantSearch={filters.merchant}
+            onMerchantSearchChange={(merchant) => updateFilters({ merchant })}
+            dateFrom={filters.dateFrom}
+            onDateFromChange={(dateFrom) => updateFilters({ dateFrom })}
+            dateTo={filters.dateTo}
+            onDateToChange={(dateTo) => updateFilters({ dateTo })}
+            onClearAll={clearAllFilters}
+          />
+        </motion.div>
+
+        {/* Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <Card>
+            <CardContent className="p-0">
+              {isLoading ? (
+                <div className="p-8">
+                  <div className="space-y-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-4">
+                        <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-muted animate-pulse rounded w-1/4" />
+                          <div className="h-3 bg-muted animate-pulse rounded w-1/6" />
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(transaction.date).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className={`text-right font-medium ${getAmountColor(transaction)}`}>
-                        {formatAmount(transaction)}
-                      </TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          transaction.status === 'cleared' 
-                            ? 'bg-green-100 text-green-800' 
-                            : transaction.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {transaction.status}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No transactions found</p>
-                <Button className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Your First Transaction
-                </Button>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {transactionsResponse?.metadata?.total && transactionsResponse.metadata.total > 10 && (
-              <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-muted-foreground">
-                  Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, transactionsResponse.metadata.total)} of {transactionsResponse.metadata.total} results
-                </p>
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(page - 1)}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(page + 1)}
-                    disabled={page === Math.ceil(transactionsResponse.metadata.total / 10)}
-                  >
-                    Next
-                  </Button>
+                        <div className="h-4 bg-muted animate-pulse rounded w-16" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <TransactionTable
+                  transactions={filteredTransactions}
+                  sortBy={filters.sortBy}
+                  sortOrder={filters.sortOrder}
+                  onSort={(column) => {
+                    const newOrder = filters.sortBy === column && filters.sortOrder === 'asc' ? 'desc' : 'asc'
+                    updateFilters({ sortBy: column, sortOrder: newOrder })
+                  }}
+                  density={filters.density}
+                  onRowClick={handleRowClick}
+                  selectedTransactionId={selectedTransaction?.id}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Details Drawer */}
+        <TransactionDetailsDrawer
+          transaction={selectedTransaction}
+          isOpen={isDrawerOpen}
+          onClose={() => {
+            setIsDrawerOpen(false)
+            setSelectedTransaction(null)
+          }}
+          onRecategorize={handleRecategorize}
+        />
+      </div>
     </main>
   )
 }

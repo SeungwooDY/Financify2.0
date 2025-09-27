@@ -119,7 +119,7 @@ export function CategoryBarChart({ metrics, className }: CategoryBarChartProps) 
                 }
                 return colorMap[colorClass] || '#6b7280'
               })}
-              onBarClick={(data) => handleCategoryClick(data.originalCategory)}
+              onBarClick={(data) => handleCategoryClick(data.originalCategory as TransactionCategory)}
               selectedIndex={selectedCategory ? topCategories.findIndex(cat => cat.category === selectedCategory) : undefined}
               responsive
               showTooltip
