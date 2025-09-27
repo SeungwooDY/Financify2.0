@@ -551,6 +551,17 @@
     overflow-wrap: break-word !important;
   }
   
+  /* Fix for upload page text wrapping */
+  .upload-text-fix {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    word-wrap: normal !important;
+    hyphens: auto !important;
+    line-height: 1.6 !important;
+    text-align: center !important;
+  }
+  
   /* Typography utilities */
   .text-balance {
     text-wrap: balance;

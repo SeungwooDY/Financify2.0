@@ -67,19 +67,27 @@ export default function UploadPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-[1264px] mx-auto px-6 py-12">
+      <div className="max-w-[1600px] mx-auto px-12 py-20">
         {/* Header */}
-        <div className="text-center mb-12">
-          <Heading as="h1" size="4xl" className="mb-4 text-balance">
+        <div className="mb-12" style={{ textAlign: 'center' }}>
+          <Heading as="h1" size="4xl" balance={false} className="mb-6">
             Import Wizard
           </Heading>
-          <Text size="lg" color="muted" className="max-w-2xl mx-auto">
-            Drag a statement or snap a photo to get started with your financial tracking
-          </Text>
+          <p className="text-lg text-muted-foreground max-w-7xl mx-auto leading-relaxed px-4" style={{ 
+            whiteSpace: 'normal', 
+            wordBreak: 'normal', 
+            overflowWrap: 'break-word',
+            lineHeight: '1.7',
+            textAlign: 'center'
+          }}>
+            Drag a statement or snap a photo to get started with your financial tracking. 
+            Our intelligent system will automatically parse your transactions and categorize them for you. 
+            Simply upload your bank statements, receipts, or CSV files and watch as we transform your raw financial data into beautiful, actionable insights.
+          </p>
         </div>
 
         {/* 3 Cards in vertical flow */}
-        <div className="space-y-8 max-w-4xl mx-auto">
+        <div className="space-y-8 max-w-8xl mx-auto">
           {/* Card 1: Dropzone */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -89,55 +97,108 @@ export default function UploadPage() {
             <Card className="card-elevated">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-center">Upload Your Files</CardTitle>
-                <CardDescription className="text-center text-lg">
-                  Drag, paste, or select files to import your financial data
-                </CardDescription>
+                <p className="text-lg text-muted-foreground max-w-7xl mx-auto leading-relaxed px-4" style={{ 
+                  whiteSpace: 'normal', 
+                  wordBreak: 'normal', 
+                  overflowWrap: 'break-word',
+                  lineHeight: '1.6',
+                  textAlign: 'center'
+                }}>
+                  Drag, paste, or select files to import your financial data. 
+                  We support JPG, PNG, PDF, CSV, and Excel files for seamless data import. 
+                  Our advanced OCR technology can even read text from photos of receipts and statements.
+                </p>
               </CardHeader>
               <CardContent>
-                <div
-                  className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
-                    dragActive 
-                      ? "border-accent-1 bg-accent-1/5 scale-[1.02]" 
-                      : "border-white/20 hover:border-accent-1/50 hover:bg-accent-1/5"
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <input
-                    type="file"
-                    multiple
-                    accept=".csv,.xlsx,.xls,.pdf,.jpg,.jpeg,.png"
-                    onChange={handleFileInput}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  
-                  <div className="space-y-6">
-                    <div className="flex justify-center space-x-4">
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-accent-1/20 to-accent-2/20">
-                        <Upload className="h-8 w-8 text-accent-1" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Camera Section */}
+                  <div
+                    className="relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 hover:border-accent-2/50 hover:bg-accent-2/5 cursor-pointer group"
+                    onClick={() => {
+                      // Access camera functionality
+                      navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                          // Camera access granted - you can implement camera UI here
+                          console.log('Camera access granted');
+                          // For now, just show an alert
+                          alert('Camera access granted! Camera functionality will be implemented here.');
+                        })
+                        .catch(err => {
+                          console.error('Camera access denied:', err);
+                          alert('Camera access is required to take photos of receipts.');
+                        });
+                    }}
+                  >
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-accent-2/20 to-accent-3/20 group-hover:scale-110 transition-transform duration-300">
+                          <Camera className="h-12 w-12 text-accent-2" />
+                        </div>
                       </div>
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-accent-2/20 to-accent-3/20">
-                        <Camera className="h-8 w-8 text-accent-2" />
-                      </div>
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-accent-3/20 to-accent-1/20">
-                        <FileImage className="h-8 w-8 text-accent-3" />
+                      
+                      <div>
+                        <h3 className="text-xl font-semibold text-text mb-2">
+                          Take Photo
+                        </h3>
+                        <p className="text-text-secondary leading-relaxed" style={{ 
+                          wordWrap: 'normal', 
+                          overflowWrap: 'break-word',
+                          whiteSpace: 'normal',
+                          wordBreak: 'normal',
+                          lineHeight: '1.6'
+                        }}>
+                          Snap a photo of your receipt or statement using your device's camera
+                        </p>
                       </div>
                     </div>
+                  </div>
+
+                  {/* File Upload Section */}
+                  <div
+                    className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                      dragActive 
+                        ? "border-accent-1 bg-accent-1/5 scale-[1.02]" 
+                        : "border-white/20 hover:border-accent-1/50 hover:bg-accent-1/5"
+                    }`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                  >
+                    <input
+                      type="file"
+                      multiple
+                      accept=".csv,.xlsx,.xls,.pdf,.jpg,.jpeg,.png"
+                      onChange={handleFileInput}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
                     
-                    <div>
-                      <h3 className="text-xl font-semibold text-text mb-2">
-                        Drop your files here
-                      </h3>
-                      <p className="text-text-secondary mb-4">
-                        Supports JPG, PDF, CSV, and Excel files
-                      </p>
-                      <div className="flex flex-wrap justify-center gap-2 text-sm text-text-tertiary">
-                        <span className="px-3 py-1 rounded-full bg-muted/50">JPG/PNG</span>
-                        <span className="px-3 py-1 rounded-full bg-muted/50">PDF</span>
-                        <span className="px-3 py-1 rounded-full bg-muted/50">CSV</span>
-                        <span className="px-3 py-1 rounded-full bg-muted/50">Excel</span>
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="p-6 rounded-2xl bg-gradient-to-br from-accent-1/20 to-accent-2/20 group-hover:scale-110 transition-transform duration-300">
+                          <Upload className="h-12 w-12 text-accent-1" />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-xl font-semibold text-text mb-2">
+                          Upload Files
+                        </h3>
+                        <p className="text-text-secondary leading-relaxed mb-4" style={{ 
+                          wordWrap: 'normal', 
+                          overflowWrap: 'break-word',
+                          whiteSpace: 'normal',
+                          wordBreak: 'normal',
+                          lineHeight: '1.6'
+                        }}>
+                          Drag and drop files or click to browse and select multiple files
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-2 text-sm text-text-tertiary">
+                          <span className="px-3 py-1 rounded-full bg-muted/50">JPG/PNG</span>
+                          <span className="px-3 py-1 rounded-full bg-muted/50">PDF</span>
+                          <span className="px-3 py-1 rounded-full bg-muted/50">CSV</span>
+                          <span className="px-3 py-1 rounded-full bg-muted/50">Excel</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -156,9 +217,17 @@ export default function UploadPage() {
               <Card className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-center">Preview & Parse</CardTitle>
-                  <CardDescription className="text-center text-lg">
-                    Review your parsed transactions and edit categories
-                  </CardDescription>
+                  <p className="text-lg text-muted-foreground max-w-6xl mx-auto leading-relaxed px-4" style={{ 
+                    whiteSpace: 'normal', 
+                    wordBreak: 'normal', 
+                    overflowWrap: 'break-word',
+                    lineHeight: '1.6',
+                    textAlign: 'center'
+                  }}>
+                    Review your parsed transactions and edit categories as needed. 
+                    Our AI will automatically categorize your spending patterns for better insights. 
+                    You can manually adjust any categorization before generating your personalized financial wrapped.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   {/* File thumbnails */}
@@ -237,9 +306,17 @@ export default function UploadPage() {
               <Card className="card-elevated">
                 <CardHeader>
                   <CardTitle className="text-2xl font-semibold text-center">Confirm & Generate</CardTitle>
-                  <CardDescription className="text-center text-lg">
-                    Create your personalized financial wrapped
-                  </CardDescription>
+                  <p className="text-lg text-muted-foreground max-w-6xl mx-auto leading-relaxed px-4" style={{ 
+                    whiteSpace: 'normal', 
+                    wordBreak: 'normal', 
+                    overflowWrap: 'break-word',
+                    lineHeight: '1.6',
+                    textAlign: 'center'
+                  }}>
+                    Create your personalized financial wrapped with beautiful visualizations. 
+                    Get insights into your spending habits, top merchants, and financial trends. 
+                    Share your financial journey with stunning charts and personalized recommendations.
+                  </p>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center space-y-6">
@@ -247,8 +324,9 @@ export default function UploadPage() {
                       <h4 className="text-lg font-semibold text-text mb-2">
                         Ready to create your Wrapped?
                       </h4>
-                      <p className="text-text-secondary">
-                        We&apos;ll process {parsedData.length} transactions and generate your personalized insights
+                      <p className="text-text-secondary leading-relaxed max-w-2xl mx-auto">
+                        We&apos;ll process {parsedData.length} transactions and generate your personalized insights. 
+                        This includes spending analysis, category breakdowns, trend identification, and personalized recommendations.
                       </p>
                     </div>
                     
@@ -256,7 +334,7 @@ export default function UploadPage() {
                       Create Wrapped
                     </Button>
                     
-                    <div className="flex items-center justify-center space-x-2 text-sm text-text-tertiary">
+                    <div className="flex items-center justify-center space-x-2 text-sm text-text-tertiary leading-relaxed">
                       <Shield className="h-4 w-4" />
                       <span>Files are processed locally and securely</span>
                     </div>
@@ -273,7 +351,7 @@ export default function UploadPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center"
           >
-            <div className="flex items-center justify-center space-x-6 text-sm text-text-tertiary">
+            <div className="flex items-center justify-center space-x-6 text-sm text-text-tertiary leading-relaxed">
               <div className="flex items-center space-x-2">
                 <Lock className="h-4 w-4" />
                 <span>Account numbers are redacted</span>
