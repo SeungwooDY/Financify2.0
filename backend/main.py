@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import os
 import shutil
 import pytesseract
-import imageReader
+import backend.imageReader as imageReader
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,6 +48,7 @@ async def upload_image(
     result = process_image(file_path)  # create this endpoint
 
     return result
+
 
 @app.get("/process_image/")
 async def process_image(file_path):
