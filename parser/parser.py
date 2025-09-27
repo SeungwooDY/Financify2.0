@@ -2,6 +2,7 @@ import sys
 import os
 from csvParser import extract_transactions_from_csv
 from pdfParser import extract_transactions_from_pdf
+from imageParser import read_image_sentences, extract_transactions
 
 def detect_file_type(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -9,6 +10,8 @@ def detect_file_type(file_path):
         return 'csv'
     elif ext == '.pdf':
         return 'pdf'
+    elif ext in ['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.tiff']:
+        return 'image'
     else:
         return None
 
@@ -22,8 +25,11 @@ def main():
         transactions = extract_transactions_from_csv(file_path)
     elif file_type == 'pdf':
         transactions = extract_transactions_from_pdf(file_path)
+    elif file_type == 'image':
+        sentences = read_image_sentences(file_path)
+        transactions = extract_transactions(sentences)
     else:
-        print("Unsupported file type. Please provide a .csv or .pdf file.")
+        print("Unsupported file type. Please provide a .csv, .pdf, or image file.")
         return
     print("Extracted Transactions:")
     if transactions:
