@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 // import { Heading, Text } from "@/components/ui/typography"
 import { Upload, FileText, CheckCircle } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { fillOffset } from "framer-motion"
 
 export default function UploadPage() {
   const [dragActive, setDragActive] = useState(false)
@@ -39,18 +40,18 @@ export default function UploadPage() {
   return (
     <main className="container-5xl py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-8 w-full text-content">
-          <h1 className="text-3xl font-bold tracking-tight text-balance force-normal-wrap">Upload Transactions</h1>
-          <p className="text-muted-foreground text-pretty max-w-none force-normal-wrap">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight" style={{ display: "flex" }}>Upload Transactions</h1>
+          <p className="text-muted-foreground" style={{ display: "flex", width: 300, justifyContent: "center"}}>
             Import your bank statements and transaction data
           </p>
-        </div>
+        </div>        
 
         {/* Upload Area */}
         <Card>
           <CardHeader>
-            <CardTitle>Upload Files</CardTitle>
-            <CardDescription className="w-full force-normal-wrap">
+            <CardTitle style={{ display: "flex", width: 400, justifyContent: "center"}}>Upload Files</CardTitle>
+            <CardDescription style={{ display: "flex", justifyContent: "center"}}>
               Drag and drop your files here, or click to browse
             </CardDescription>
           </CardHeader>
@@ -65,6 +66,7 @@ export default function UploadPage() {
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
+              style={{ display: "flex", width: 400, justifyContent: "center"}}
             >
               <input
                 type="file"
@@ -73,16 +75,13 @@ export default function UploadPage() {
                 onChange={handleFileInput}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium mb-2 w-full force-normal-wrap">
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" style={{ display: "flex"}}/>
+              <p className="text-lg font-medium mb-2" style={{ display: "flex", justifyContent: "center"}}>
                 Drop your files here
               </p>
-              <p className="text-sm text-muted-foreground mb-4 w-full force-normal-wrap">
+              <p className="text-sm text-muted-foreground mb-4">
                 Supports CSV, Excel, and PDF files
               </p>
-              <Button variant="outline">
-                Choose Files
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -91,7 +90,7 @@ export default function UploadPage() {
         {uploadedFiles.length > 0 && (
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Uploaded Files</CardTitle>
+              <h1 style={{ display: "flex", width: 500}}>Uploaded Files</h1>
               <CardDescription>
                 {uploadedFiles.length} file(s) ready for processing
               </CardDescription>
@@ -103,7 +102,7 @@ export default function UploadPage() {
                   <div className="flex items-center space-x-3">
                     <FileText className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium truncate break-words" title={file.name}>{file.name}</p>
+                      <p className="text-sm font-medium">{file.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {(file.size / 1024).toFixed(1)} KB
                       </p>
@@ -135,22 +134,22 @@ export default function UploadPage() {
             <CardTitle>Supported Formats</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4" style={{ width: 500 }}>
               <div>
-                <h4 className="font-medium mb-2">CSV Files</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium mb-2" style={{ display: "flex", width: 1000}}>CSV Files</h4>
+                <p className="text-sm text-muted-foreground" style={{ display: "flex" }}>
                   Ensure your CSV has columns for: Date, Description, Amount, Category
                 </p>
               </div>
               <div>
-                <h4 className="font-medium mb-2">Excel Files</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium mb-2" style={{ display: "flex" }}>Excel Files</h4>
+                <p className="text-sm text-muted-foreground" style={{ display: "flex" }}>
                   .xlsx and .xls files with similar column structure
                 </p>
               </div>
               <div>
-                <h4 className="font-medium mb-2">PDF Files</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="font-medium mb-2" style={{ display: "flex" }}>PDF Files</h4>
+                <p className="text-sm text-muted-foreground" style={{ display: "flex" }}>
                   Bank statements in PDF format (OCR processing)
                 </p>
               </div>
@@ -160,4 +159,5 @@ export default function UploadPage() {
       </div>
     </main>
   )
+  
 }
