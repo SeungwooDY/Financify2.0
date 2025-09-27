@@ -75,15 +75,21 @@ function BudgetContent() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-[1264px] mx-auto px-6 py-12">
+      <div className="max-w-[1600px] mx-auto px-12 py-20">
         <div className="mb-8">
-          <Heading as="h1" size="4xl" className="mb-4 text-balance">
+          <Heading as="h1" size="4xl" balance={false} className="mb-6">
             Budget Copilot
           </Heading>
-          <Text size="lg" color="muted" className="max-w-2xl">
+          <Text size="lg" color="muted" className="max-w-7xl mx-auto leading-relaxed px-4" style={{ 
+            whiteSpace: 'normal', 
+            wordBreak: 'normal', 
+            overflowWrap: 'break-word',
+            lineHeight: '1.7',
+            textAlign: 'center'
+          }}>
             {mode === 'budget' 
-              ? 'Set new spending limits and track your progress toward financial goals'
-              : 'Monitor your current spending patterns and maintain healthy financial habits'
+              ? 'Set new spending limits and track your progress toward financial goals. Create realistic budgets based on your spending patterns and achieve your financial objectives with personalized insights.'
+              : 'Monitor your current spending patterns and maintain healthy financial habits. Track your expenses, identify trends, and make informed decisions about your money management.'
             }
           </Text>
         </div>

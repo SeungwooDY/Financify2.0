@@ -158,11 +158,18 @@ function CalendarContent() {
 
   return (
     <main className="min-h-screen">
-      <div className="max-w-[1264px] mx-auto px-6 py-12">
+      <div className="max-w-[1600px] mx-auto px-12 py-20">
         <div className="mb-8">
-          <Heading as="h1" size="4xl" className="mb-4 text-balance">Spending Heatmap</Heading>
-          <Text size="lg" color="muted" className="max-w-2xl">
-            Visualize your daily spending patterns and trends with an interactive calendar
+          <Heading as="h1" size="4xl" balance={false} className="mb-6">Spending Heatmap</Heading>
+          <Text size="lg" color="muted" className="max-w-7xl mx-auto leading-relaxed px-4" style={{ 
+            whiteSpace: 'normal', 
+            wordBreak: 'normal', 
+            overflowWrap: 'break-word',
+            lineHeight: '1.7',
+            textAlign: 'center'
+          }}>
+            Visualize your daily spending patterns and trends with an interactive calendar. 
+            Track your financial habits, identify spending spikes, and discover patterns in your daily expenses.
           </Text>
         </div>
 
