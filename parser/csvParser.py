@@ -1,5 +1,6 @@
 import csv
 import re
+import sys
 
 def extract_transactions_from_csv(csv_path):
 	"""
@@ -7,27 +8,41 @@ def extract_transactions_from_csv(csv_path):
 	Returns a list of dictionaries with keys: 'amount', 'date', 'description'.
 	"""
 	transactions = []
-	amount_pattern = r'\$?([0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]{2})?)'
-	date_pattern = r'(\d{1,2}/\d{1,2}/\d{2,4}|\d{4}-\d{2}-\d{2}|[A-Za-z]{3,9} \d{1,2}, \d{4})'
-
 	with open(csv_path, newline='', encoding='utf-8') as csvfile:
 		reader = csv.reader(csvfile)
-		header = next(reader, None)  # Skip header row
+		header = next(reader, None)
+		# Find column indices
+		header_lower = [h.lower() for h in header]
+		try:
+			desc_idx = header_lower.index('description')
+		except ValueError:
+			desc_idx = None
+		try:
+			cat_idx = header_lower.index('category')
+		except ValueError:
+			cat_idx = None
+		# Try common amount/date headers
+		amount_headers = ['amount', 'debit', 'credit']
+		date_headers = ['transaction date', 'date', 'posted date']
+		amount_idx = next((header_lower.index(h) for h in amount_headers if h in header_lower), None)
+		date_idx = next((header_lower.index(h) for h in date_headers if h in header_lower), None)
+
 		for row in reader:
-			line = ' '.join(row)
-			amount_match = re.search(amount_pattern, line)
-			date_match = re.search(date_pattern, line)
 			# Only add if at least amount or date is found
-			if amount_match or date_match:
+			amount = row[amount_idx] if amount_idx is not None and amount_idx < len(row) else None
+			date = row[date_idx] if date_idx is not None and date_idx < len(row) else None
+			category = row[cat_idx] if cat_idx is not None and cat_idx < len(row) else None
+			description = row[desc_idx] if desc_idx is not None and desc_idx < len(row) else ' '.join(row)
+			if amount or date:
 				transactions.append({
-					'amount': amount_match.group(0) if amount_match else None,
-					'date': date_match.group(0) if date_match else None,
-					'description': line
+					'amount': amount,
+					'date': date,
+					'category': category,
+					'description': description
 				})
 	return transactions
 
 if __name__ == "__main__":
-	import sys
 	if len(sys.argv) < 2:
 		print("Usage: python csvParser.py <csv_path>")
 	else:

@@ -1,10 +1,15 @@
+from PIL import Image, ImageEnhance, ImageFilter, ImageStat
+import pytesseract
+import re
+import numpy as np
+import os
+from pdf2image import convert_from_path
+
 def get_optimal_scale(img, target_height=24):
     """
     Determines optimal scale factor so the smallest detected text height reaches target_height pixels.
     Returns scale factor (float).
     """
-    import pytesseract
-    import numpy as np
     # Run OCR to get bounding boxes
     data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
     heights = [h for h in data['height'] if h > 0]
@@ -13,10 +18,6 @@ def get_optimal_scale(img, target_height=24):
     min_height = min(heights)
     scale = max(target_height / min_height, 1.0)
     return scale
-from PIL import Image
-import pytesseract
-
-import re
 
 def extract_transactions(sentences):
     """
@@ -46,8 +47,6 @@ def extract_transactions(sentences):
 
 def preprocess_image(img):
     img = img.convert('L')
-    from PIL import ImageEnhance, ImageFilter, ImageStat
-    import numpy as np
 
     # Automatic image quality detection
     stat = ImageStat.Stat(img)
@@ -92,11 +91,18 @@ def read_image_sentences(image_path):
     img = preprocess_image(img)
 
     # Save preprocessed image for inspection
-    img.save('./preprocessedImages/preprocessed_output.png')
+    filename = os.path.basename(image_path)
+    name, ext = os.path.splitext(filename)
+    out_path = f'./preprocessedImages/{name}_preprocessed.png'
+    img.save(out_path)
 
     text = pytesseract.image_to_string(img)
-    sentences = re.split(r'[.!?]\s+', text)
-    sentences = [s.strip() for s in sentences if s.strip()]
+    lines = text.splitlines()
+    # Match lines that start with a date (MM/DD, M/D, MM-DD, M-D, YYYY-MM-DD, etc.)
+    date_line_pattern = re.compile(r'^(\d{1,2}[/-]\d{1,2}|\d{4}-\d{1,2}-\d{1,2})')
+    date_lines = [line.strip() for line in lines if date_line_pattern.match(line.strip())]
+    # Optionally split further into sentences if needed
+    sentences = [l for l in date_lines if l]
     return sentences
 
 if __name__ == "__main__":
