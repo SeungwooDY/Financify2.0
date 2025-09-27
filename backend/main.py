@@ -28,3 +28,22 @@ app.add_middleware(
 ###
 ### Post requests here
 ###
+
+UPLOAD_DIR = "uploads"  # name of file
+os.makedirs(
+    UPLOAD_DIR, exist_ok=True
+)  # creates file if doesn't exist, (exist_ok) = prevents errors if folder is already there
+
+
+@app.post("/upload_image/")
+async def upload_image(
+    file: UploadFile = File(...),
+):  # async function allows for concurrent requests
+    # save the uploaded file
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    result = process_image(file_path)  # create this endpoint
+
+    return result
