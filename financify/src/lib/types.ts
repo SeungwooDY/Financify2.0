@@ -1,328 +1,549 @@
+import { z } from "zod"
+
+// ============================================================================
+// CORE TYPES
+// ============================================================================
+
 /**
- * Core financial data types for the Financify application
- * These types define the data contracts used throughout the application
+ * Budget category for tracking spending limits
  */
-
-// Base financial entity
-export interface BaseEntity {
+export interface User {
   id: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-// Currency and monetary values
-export interface Money {
-  amount: number
-  currency: string
-}
-
-export interface Currency {
-  code: string
-  name: string
-  symbol: string
-  decimals: number
-}
-
-// User and authentication
-export interface User extends BaseEntity {
-  email: string
   firstName: string
   lastName: string
+  email: string
   avatar?: string
-  preferences: UserPreferences
-}
-
-export interface UserPreferences {
-  currency: string
-  locale: string
-  theme: 'light' | 'dark' | 'system'
-  notifications: NotificationSettings
-}
-
-export interface NotificationSettings {
-  email: boolean
-  push: boolean
-  sms: boolean
-}
-
-// Account types
-export interface Account extends BaseEntity {
-  name: string
-  type: AccountType
-  balance: Money
-  currency: string
-  isActive: boolean
-  metadata?: Record<string, any>
-}
-
-export type AccountType = 
-  | 'checking'
-  | 'savings'
-  | 'credit'
-  | 'investment'
-  | 'loan'
-  | 'mortgage'
-  | 'crypto'
-  | 'other'
-
-// Transaction types
-export interface Transaction extends BaseEntity {
-  accountId: string
-  amount: Money
-  description: string
-  category: Category
-  subcategory?: string
-  tags: string[]
-  date: Date
-  type: TransactionType
-  status: TransactionStatus
-  metadata?: Record<string, any>
-}
-
-export type TransactionType = 'income' | 'expense' | 'transfer'
-export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'cancelled'
-
-// Category system
-export interface Category extends BaseEntity {
-  name: string
-  type: TransactionType
-  color: string
-  icon: string
-  parentId?: string
-  isActive: boolean
-  subcategories: Category[]
-}
-
-// Budget and planning
-export interface Budget extends BaseEntity {
-  name: string
-  period: BudgetPeriod
-  startDate: Date
-  endDate: Date
-  categories: BudgetCategory[]
-  totalAmount: Money
-  spentAmount: Money
-  isActive: boolean
+  preferences: {
+    currency: string
+    dateFormat: string
+    timezone: string
+    notifications: {
+      email: boolean
+      push: boolean
+      sms: boolean
+    }
+  }
+  createdAt: string
+  updatedAt: string
 }
 
 export interface BudgetCategory {
   categoryId: string
-  budgetedAmount: Money
-  spentAmount: Money
-  limit?: Money
-}
-
-export type BudgetPeriod = 'weekly' | 'monthly' | 'quarterly' | 'yearly'
-
-// Investment types
-export interface Investment extends BaseEntity {
-  symbol: string
-  name: string
-  type: InvestmentType
-  quantity: number
-  averagePrice: Money
-  currentPrice: Money
-  totalValue: Money
-  gainLoss: Money
-  gainLossPercentage: number
-  accountId: string
-}
-
-export type InvestmentType = 'stock' | 'bond' | 'etf' | 'mutual_fund' | 'crypto' | 'commodity'
-
-// Goal types
-export interface Goal extends BaseEntity {
-  name: string
-  description?: string
-  targetAmount: Money
-  currentAmount: Money
-  targetDate: Date
-  type: GoalType
-  isActive: boolean
-  progress: number
-}
-
-export type GoalType = 'savings' | 'debt_payoff' | 'investment' | 'purchase' | 'emergency_fund'
-
-// Report and analytics
-export interface Report extends BaseEntity {
-  name: string
-  type: ReportType
-  period: ReportPeriod
-  data: ReportData
-  generatedAt: Date
-}
-
-export type ReportType = 'income_expense' | 'net_worth' | 'cash_flow' | 'investment_performance'
-export type ReportPeriod = 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
-
-export interface ReportData {
-  summary: ReportSummary
-  charts: ChartData[]
-  tables: TableData[]
-}
-
-export interface ReportSummary {
-  totalIncome: Money
-  totalExpenses: Money
-  netIncome: Money
-  savingsRate: number
-  topCategories: CategorySummary[]
-}
-
-export interface CategorySummary {
-  categoryId: string
-  name: string
-  amount: Money
+  category: TransactionCategory
+  budgetedAmount: Currency
+  spentAmount: Currency
   percentage: number
-  transactionCount: number
 }
 
-export interface ChartData {
-  type: 'line' | 'bar' | 'pie' | 'area'
-  title: string
-  data: any[]
-  xAxis?: string
-  yAxis?: string
-}
+// Schema will be defined later after TransactionCategorySchema and CurrencySchema
 
-export interface TableData {
-  title: string
-  columns: string[]
-  rows: any[][]
-}
-
-// API response types
-export interface ApiResponse<T> {
-  data: T
-  message?: string
-  success: boolean
-  errors?: string[]
-}
-
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}
-
-// Form types
-export interface FormField {
+/**
+ * Budget for a specific period
+ */
+export interface Budget {
+  id: string
   name: string
-  label: string
-  type: 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea' | 'date'
-  required: boolean
-  placeholder?: string
-  options?: { value: string; label: string }[]
-  validation?: ValidationRule[]
+  period: "weekly" | "monthly" | "quarterly" | "yearly"
+  startDate: string
+  endDate: string
+  totalAmount: Currency
+  spentAmount: Currency
+  categories: BudgetCategory[]
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
-export interface ValidationRule {
-  type: 'required' | 'email' | 'min' | 'max' | 'pattern'
-  value?: any
+// Schema will be defined later after CurrencySchema and BudgetCategorySchema
+
+/**
+ * Currency representation with precision handling
+ * All amounts stored in cents to avoid floating point errors
+ */
+export interface Currency {
+  amount: number // Amount in cents
+  currency: string // ISO 4217 currency code (e.g., "USD", "EUR")
+  symbol: string // Display symbol (e.g., "$", "€")
+}
+
+export const CurrencySchema = z.object({
+  amount: z.number().int().min(0),
+  currency: z.string().length(3),
+  symbol: z.string().max(3)
+})
+
+// Schema will be defined later after TransactionCategorySchema
+
+// Schema will be defined later after BudgetCategorySchema
+
+/**
+ * Transaction categories for student finance tracking
+ */
+export type TransactionCategory = 
+  | "tuition" | "books" | "housing" | "food" | "transportation" 
+  | "entertainment" | "healthcare" | "utilities" | "shopping" 
+  | "income" | "refund" | "other"
+
+export const TransactionCategorySchema = z.enum([
+  "tuition", "books", "housing", "food", "transportation",
+  "entertainment", "healthcare", "utilities", "shopping",
+  "income", "refund", "other"
+])
+
+export const BudgetCategorySchema = z.object({
+  categoryId: z.string().uuid(),
+  category: TransactionCategorySchema,
+  budgetedAmount: CurrencySchema,
+  spentAmount: CurrencySchema,
+  percentage: z.number().min(0).max(100)
+})
+
+export const BudgetSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  period: z.enum(["weekly", "monthly", "quarterly", "yearly"]),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
+  totalAmount: CurrencySchema,
+  spentAmount: CurrencySchema,
+  categories: z.array(BudgetCategorySchema),
+  isActive: z.boolean(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime()
+})
+
+/**
+ * Transaction types
+ */
+export type TransactionType = "income" | "expense" | "transfer"
+
+export const TransactionTypeSchema = z.enum(["income", "expense", "transfer"])
+
+/**
+ * Transaction status for pending/cleared states
+ */
+export type TransactionStatus = "pending" | "cleared" | "cancelled"
+
+export const TransactionStatusSchema = z.enum(["pending", "cleared", "cancelled"])
+
+/**
+ * Payment methods
+ */
+export type PaymentMethod = 
+  | "debit_card" | "credit_card" | "bank_transfer" | "cash" 
+  | "check" | "mobile_payment" | "crypto" | "other"
+
+export const PaymentMethodSchema = z.enum([
+  "debit_card", "credit_card", "bank_transfer", "cash",
+  "check", "mobile_payment", "crypto", "other"
+])
+
+// ============================================================================
+// TRANSACTION TYPES
+// ============================================================================
+
+/**
+ * Core transaction interface
+ */
+export interface Transaction {
+  id: string
+  date: string // ISO 8601 date string
+  description: string
+  amount: Currency
+  category: TransactionCategory
+  type: TransactionType
+  status: TransactionStatus
+  paymentMethod: PaymentMethod
+  accountId: string
+  merchant?: string
+  location?: {
+    name: string
+    address?: string
+    coordinates?: {
+      lat: number
+      lng: number
+    }
+  }
+  tags: string[]
+  notes?: string
+  metadata: Record<string, unknown>
+  createdAt: string
+  updatedAt: string
+}
+
+export const TransactionSchema = z.object({
+  id: z.string().uuid(),
+  date: z.string().datetime(),
+  description: z.string().min(1).max(255),
+  amount: CurrencySchema,
+  category: TransactionCategorySchema,
+  type: TransactionTypeSchema,
+  status: TransactionStatusSchema,
+  paymentMethod: PaymentMethodSchema,
+  accountId: z.string().uuid(),
+  merchant: z.string().optional(),
+  location: z.object({
+    name: z.string(),
+    address: z.string().optional(),
+    coordinates: z.object({
+      lat: z.number(),
+      lng: z.number()
+    }).optional()
+  }).optional(),
+  tags: z.array(z.string()),
+  notes: z.string().optional(),
+  metadata: z.record(z.string(), z.unknown()),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime()
+})
+
+// ============================================================================
+// MONTHLY METRICS TYPES
+// ============================================================================
+
+/**
+ * Monthly financial metrics and analytics
+ */
+export interface MonthMetrics {
+  month: string // YYYY-MM format
+  totalIncome: Currency
+  totalExpenses: Currency
+  netIncome: Currency
+  savingsRate: number // Percentage (0-100)
+  
+  // Category breakdowns
+  categoryBreakdown: {
+    category: TransactionCategory
+    amount: Currency
+    percentage: number
+    transactionCount: number
+  }[]
+  
+  // Spending patterns
+  spendingPatterns: {
+    averageDailySpending: Currency
+    highestSpendingDay: {
+      date: string
+      amount: Currency
+    }
+    mostFrequentCategory: TransactionCategory
+    mostExpensiveCategory: TransactionCategory
+  }
+  
+  // Budget vs actual
+  budgetComparison: {
+    category: TransactionCategory
+    budgeted: Currency
+    actual: Currency
+    variance: Currency
+    variancePercentage: number
+  }[]
+  
+  // Trends
+  trends: {
+    weekOverWeek: {
+      incomeChange: number // Percentage change
+      expenseChange: number
+    }
+    monthOverMonth: {
+      incomeChange: number
+      expenseChange: number
+    }
+  }
+  
+  // Alerts and insights
+  alerts: {
+    type: "overspend" | "underspend" | "unusual" | "goal_met" | "goal_missed"
+    category: TransactionCategory
+    message: string
+    severity: "low" | "medium" | "high"
+  }[]
+  
+  generatedAt: string
+}
+
+export const MonthMetricsSchema = z.object({
+  month: z.string().regex(/^\d{4}-\d{2}$/),
+  totalIncome: CurrencySchema,
+  totalExpenses: CurrencySchema,
+  netIncome: CurrencySchema,
+  savingsRate: z.number().min(0).max(100),
+  categoryBreakdown: z.array(z.object({
+    category: TransactionCategorySchema,
+    amount: CurrencySchema,
+    percentage: z.number().min(0).max(100),
+    transactionCount: z.number().int().min(0)
+  })),
+  spendingPatterns: z.object({
+    averageDailySpending: CurrencySchema,
+    highestSpendingDay: z.object({
+      date: z.string(),
+      amount: CurrencySchema
+    }),
+    mostFrequentCategory: TransactionCategorySchema,
+    mostExpensiveCategory: TransactionCategorySchema
+  }),
+  budgetComparison: z.array(z.object({
+    category: TransactionCategorySchema,
+    budgeted: CurrencySchema,
+    actual: CurrencySchema,
+    variance: CurrencySchema,
+    variancePercentage: z.number()
+  })),
+  trends: z.object({
+    weekOverWeek: z.object({
+      incomeChange: z.number(),
+      expenseChange: z.number()
+    }),
+    monthOverMonth: z.object({
+      incomeChange: z.number(),
+      expenseChange: z.number()
+    })
+  }),
+  alerts: z.array(z.object({
+    type: z.enum(["overspend", "underspend", "unusual", "goal_met", "goal_missed"]),
+    category: TransactionCategorySchema,
+    message: z.string(),
+    severity: z.enum(["low", "medium", "high"])
+  })),
+  generatedAt: z.string().datetime()
+})
+
+// ============================================================================
+// COPILOT ADVICE TYPES
+// ============================================================================
+
+/**
+ * AI Copilot advice and recommendations
+ */
+export interface CopilotAdvice {
+  id: string
+  mode: "general" | "budget" | "savings" | "spending" | "debt" | "investment"
+  title: string
   message: string
-}
-
-// UI component types
-export interface TableColumn<T> {
-  key: keyof T
-  title: string
-  sortable?: boolean
-  render?: (value: any, item: T) => React.ReactNode
-}
-
-export interface TableProps<T> {
-  data: T[]
-  columns: TableColumn<T>[]
-  loading?: boolean
-  onSort?: (key: keyof T, direction: 'asc' | 'desc') => void
-  onRowClick?: (item: T) => void
-}
-
-// Chart types
-export interface ChartProps {
-  data: any[]
-  width?: number
-  height?: number
-  responsive?: boolean
-  className?: string
-}
-
-// Navigation types
-export interface NavItem {
-  label: string
-  href: string
-  icon?: string
-  badge?: string | number
-  children?: NavItem[]
-}
-
-// Theme types
-export interface Theme {
-  name: string
-  colors: {
-    primary: string
-    secondary: string
-    accent: string
-    background: string
-    foreground: string
-    muted: string
-    border: string
+  priority: "low" | "medium" | "high" | "urgent"
+  category: TransactionCategory | "general"
+  
+  // Actionable recommendations
+  recommendations: {
+    id: string
+    title: string
+    description: string
+    actionType: "reduce_spending" | "increase_income" | "optimize_budget" | "save_more" | "pay_debt"
+    estimatedImpact: Currency
+    difficulty: "easy" | "medium" | "hard"
+    timeframe: "immediate" | "short_term" | "long_term"
+  }[]
+  
+  // Supporting data
+  insights: {
+    metric: string
+    value: string
+    trend: "up" | "down" | "stable"
+    significance: "low" | "medium" | "high"
+  }[]
+  
+  // Context
+  context: {
+    month: string
+    relevantTransactions: string[] // Transaction IDs
+    userProfile: {
+      studentType: "undergraduate" | "graduate" | "phd" | "professional"
+      incomeLevel: "low" | "medium" | "high"
+      spendingStyle: "conservative" | "moderate" | "aggressive"
+    }
   }
-  fonts: {
-    sans: string
-    mono: string
-    display: string
-  }
-  spacing: {
-    xs: string
-    sm: string
-    md: string
-    lg: string
-    xl: string
-  }
-  borderRadius: {
-    sm: string
-    md: string
-    lg: string
-    xl: string
+  
+  generatedAt: string
+  expiresAt: string
+}
+
+export const CopilotAdviceSchema = z.object({
+  id: z.string().uuid(),
+  mode: z.enum(["general", "budget", "savings", "spending", "debt", "investment"]),
+  title: z.string().min(1).max(100),
+  message: z.string().min(1).max(1000),
+  priority: z.enum(["low", "medium", "high", "urgent"]),
+  category: z.union([TransactionCategorySchema, z.literal("general")]),
+  recommendations: z.array(z.object({
+    id: z.string().uuid(),
+    title: z.string().min(1).max(100),
+    description: z.string().min(1).max(500),
+    actionType: z.enum(["reduce_spending", "increase_income", "optimize_budget", "save_more", "pay_debt"]),
+    estimatedImpact: CurrencySchema,
+    difficulty: z.enum(["easy", "medium", "hard"]),
+    timeframe: z.enum(["immediate", "short_term", "long_term"])
+  })),
+  insights: z.array(z.object({
+    metric: z.string(),
+    value: z.string(),
+    trend: z.enum(["up", "down", "stable"]),
+    significance: z.enum(["low", "medium", "high"])
+  })),
+  context: z.object({
+    month: z.string().regex(/^\d{4}-\d{2}$/),
+    relevantTransactions: z.array(z.string().uuid()),
+    userProfile: z.object({
+      studentType: z.enum(["undergraduate", "graduate", "phd", "professional"]),
+      incomeLevel: z.enum(["low", "medium", "high"]),
+      spendingStyle: z.enum(["conservative", "moderate", "aggressive"])
+    })
+  }),
+  generatedAt: z.string().datetime(),
+  expiresAt: z.string().datetime()
+})
+
+// ============================================================================
+// API RESPONSE TYPES
+// ============================================================================
+
+/**
+ * Standard API response wrapper
+ */
+export interface ApiResponse<T> {
+  success: boolean
+  data: T | null
+  error: ApiError | null
+  metadata?: {
+    total?: number
+    page?: number
+    limit?: number
+    hasMore?: boolean
   }
 }
 
-// Error types
-export interface AppError {
+export interface ApiError {
   code: string
   message: string
-  details?: any
-  timestamp: Date
+  details?: Record<string, unknown>
+  timestamp: string
 }
 
-// Loading states
-export interface LoadingState {
-  isLoading: boolean
-  error?: AppError
-  data?: any
-}
+export const ApiResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
+  z.object({
+    success: z.boolean(),
+    data: dataSchema.nullable(),
+    error: z.object({
+      code: z.string(),
+      message: z.string(),
+      details: z.record(z.string(), z.unknown()).optional(),
+      timestamp: z.string().datetime()
+    }).nullable(),
+    metadata: z.object({
+      total: z.number().int().min(0).optional(),
+      page: z.number().int().min(1).optional(),
+      limit: z.number().int().min(1).optional(),
+      hasMore: z.boolean().optional()
+    }).optional()
+  })
 
-// Filter and search types
-export interface Filter {
-  field: string
-  operator: 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'contains'
-  value: any
-}
+// ============================================================================
+// QUERY PARAMETER TYPES
+// ============================================================================
 
-export interface Sort {
-  field: string
-  direction: 'asc' | 'desc'
-}
-
-export interface SearchParams {
-  query?: string
-  filters?: Filter[]
-  sort?: Sort[]
+/**
+ * Transaction query parameters
+ */
+export interface TransactionQueryParams {
+  month?: string // YYYY-MM format
+  category?: TransactionCategory
+  type?: TransactionType
+  status?: TransactionStatus
+  minAmount?: number // In cents
+  maxAmount?: number // In cents
+  search?: string
+  tags?: string[]
   page?: number
   limit?: number
+  sortBy?: "date" | "amount" | "description"
+  sortOrder?: "asc" | "desc"
 }
+
+export const TransactionQueryParamsSchema = z.object({
+  month: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  category: TransactionCategorySchema.optional(),
+  type: TransactionTypeSchema.optional(),
+  status: TransactionStatusSchema.optional(),
+  minAmount: z.number().int().min(0).optional(),
+  maxAmount: z.number().int().min(0).optional(),
+  search: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  page: z.number().int().min(1).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+  sortBy: z.enum(["date", "amount", "description"]).optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional()
+})
+
+// ============================================================================
+// UTILITY TYPES
+// ============================================================================
+
+/**
+ * Currency formatting options
+ */
+export interface CurrencyFormatOptions {
+  showSymbol?: boolean
+  showCents?: boolean
+  locale?: string
+  compact?: boolean
+}
+
+/**
+ * Date range for queries
+ */
+export interface DateRange {
+  start: string // ISO 8601 date
+  end: string // ISO 8601 date
+}
+
+/**
+ * Pagination metadata
+ */
+export interface PaginationMeta {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+  hasNext: boolean
+  hasPrev: boolean
+}
+
+// ============================================================================
+// TYPE GUARDS
+// ============================================================================
+
+export const isTransaction = (obj: unknown): obj is Transaction => {
+  return TransactionSchema.safeParse(obj).success
+}
+
+export const isMonthMetrics = (obj: unknown): obj is MonthMetrics => {
+  return MonthMetricsSchema.safeParse(obj).success
+}
+
+export const isCopilotAdvice = (obj: unknown): obj is CopilotAdvice => {
+  return CopilotAdviceSchema.safeParse(obj).success
+}
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+export const TRANSACTION_CATEGORIES: TransactionCategory[] = [
+  "tuition", "books", "housing", "food", "transportation",
+  "entertainment", "healthcare", "utilities", "shopping",
+  "income", "refund", "other"
+]
+
+export const PAYMENT_METHODS: PaymentMethod[] = [
+  "debit_card", "credit_card", "bank_transfer", "cash",
+  "check", "mobile_payment", "crypto", "other"
+]
+
+export const DEFAULT_CURRENCY: Currency = {
+  amount: 0,
+  currency: "USD",
+  symbol: "$"
+}
+
+export const DEFAULT_PAGE_SIZE = 20
+export const MAX_PAGE_SIZE = 100
