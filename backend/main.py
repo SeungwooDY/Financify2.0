@@ -53,22 +53,53 @@ async def upload_image(
     return result
 
 
-def read_image_sentences_from_file(file) -> list[str]:
-    """
-    Reads an image and extracts sentences using OCR.
-    Returns a list of sentences found in the image.
-    """
-    # Open the image file
-    img = Image.open(file)
-    text = pytesseract.image_to_string(img)
-    sentences = re.split(r"[.!?]\s+", text)
-    sentences = [s.strip() for s in sentences if s.strip()]
-    return sentences
+# def read_image_sentences_from_file(file) -> list[str]:
+#     """
+#     Reads an image and extracts sentences using OCR.
+#     Returns a list of sentences found in the image.
+#     """
+#     # Open the image file
+#     img = Image.open(file)
+#     text = pytesseract.image_to_string(img)
+#     sentences = re.split(r"[.!?]\s+", text)
+#     sentences = [s.strip() for s in sentences if s.strip()]
+#     return sentences
+
+
+# @app.post("/process-image/")
+# async def process_image(file: UploadFile = File(...)):
+#     image_bytes = await file.read()
+#     img = Image.open(io.BytesIO(image_bytes))
+#     sentences = read_image_sentences_from_file(io.BytesIO(image_bytes))
+#     return {"sentences": ["Hello world."]}
+
+
+def extract_sentences_from_image_bytes(image_bytes: bytes) -> List[str]:
+    try:
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        text = pytesseract.image_to_string(img)
+        sentences = re.split(r"[.!?]\s+", text)
+        sentences = [s.strip() for s in sentences if s.strip()]
+        return sentences
+    except Exception as e:
+        print("OCR error:", e)
+        return []
 
 
 @app.post("/process-image/")
 async def process_image(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    img = Image.open(io.BytesIO(image_bytes))
-    sentences = read_image_sentences_from_file(io.BytesIO(image_bytes))
-    return {"sentences": ["Hello world."]}
+    try:
+        content = await file.read()
+
+        # Optional: save the raw upload so you can inspect it
+        saved_path = os.path.join(UPLOAD_DIR, file.filename)
+        with open(saved_path, "wb") as fh:
+            fh.write(content)
+
+        sentences = extract_sentences_from_image_bytes(content)
+        # If OCR yields nothing, you might want to return the raw text or a helpful message
+        if not sentences:
+            return {"sentences": ["(no text found)"]}
+        return {"sentences": sentences}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
