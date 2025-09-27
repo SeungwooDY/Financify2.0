@@ -13,7 +13,8 @@ uri = MONGO_URI
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
 
-db = client["financify2.0"]
+db = client["financify"]
 users_collection = db["users"]
 finances_collection = db["finances"]
+scholarships_information_collection = db["scholarships_information"]
 scholarships_collection = db["scholarships"]
