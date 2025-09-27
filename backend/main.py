@@ -4,9 +4,9 @@ from fastapi.responses import JSONResponse
 import os
 import shutil
 import pytesseract
-import backend.imageReader as imageReader
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
+import imageReader
+#from sqlalchemy import create_engine, Column, Integer, String
+#from sqlalchemy.orm import declarative_base, sessionmaker
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Annotated
