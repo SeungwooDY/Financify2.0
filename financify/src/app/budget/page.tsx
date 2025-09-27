@@ -82,10 +82,10 @@ function BudgetContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight text-balance">
+          <h1 className="text-3xl font-bold tracking-tight text-balance w-full force-normal-wrap">
             {mode === 'budget' ? 'Budget Planning' : 'Budget Maintenance'}
           </h1>
-          <p className="text-muted-foreground mt-2 text-pretty">
+          <p className="text-muted-foreground mt-2 text-pretty w-full force-normal-wrap">
             {mode === 'budget' 
               ? 'Set new spending limits and track your progress toward financial goals'
               : 'Monitor your current spending patterns and maintain healthy financial habits'

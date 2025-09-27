@@ -57,11 +57,11 @@ export function SpendingLegend({ quantiles, className }: SpendingLegendProps) {
   ]
 
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full text-content", className)}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium">Spending Intensity</CardTitle>
+        <CardTitle className="text-sm font-medium force-normal-wrap">Spending Intensity</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 text-content">
         <div className="grid grid-cols-2 gap-2">
           {legendItems.map((item) => (
             <div key={item.intensity} className="flex items-center gap-2">
@@ -72,11 +72,11 @@ export function SpendingLegend({ quantiles, className }: SpendingLegendProps) {
                 )}
                 aria-hidden="true"
               />
-              <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-foreground">
+              <div className="flex-1 min-w-0 w-full">
+                <div className="text-xs font-medium text-foreground w-full force-normal-wrap">
                   {item.label}
                 </div>
-                <div className="text-xs text-muted-foreground font-mono">
+                <div className="text-xs text-muted-foreground font-mono w-full force-normal-wrap">
                   {item.range}
                 </div>
               </div>
@@ -85,7 +85,7 @@ export function SpendingLegend({ quantiles, className }: SpendingLegendProps) {
         </div>
         
         <div className="pt-2 border-t border-muted/20">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground w-full force-normal-wrap">
             Click any day to view detailed transactions
           </p>
         </div>

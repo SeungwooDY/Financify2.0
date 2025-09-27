@@ -102,12 +102,15 @@ export function TopMerchants({ metrics, className }: TopMerchantsProps) {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium text-gray-900 truncate">
+                          <h3 
+                            className="font-medium text-gray-900 truncate break-words"
+                            title={merchant.name}
+                          >
                             {merchant.name}
                           </h3>
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <MapPin className="h-3 w-3" />
-                            <span>{merchant.location}</span>
+                            <span className="truncate break-words" title={merchant.location}>{merchant.location}</span>
                           </div>
                         </div>
                         

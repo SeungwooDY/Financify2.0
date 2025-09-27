@@ -165,8 +165,8 @@ function CalendarContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h1 className="text-3xl font-bold tracking-tight text-balance">Financial Calendar</h1>
-          <p className="text-muted-foreground mt-2 text-pretty">
+          <h1 className="text-3xl font-bold tracking-tight text-balance w-full force-normal-wrap">Financial Calendar</h1>
+          <p className="text-muted-foreground mt-2 text-pretty w-full max-w-none force-normal-wrap">
             Visualize your daily spending patterns and trends
           </p>
         </motion.div>

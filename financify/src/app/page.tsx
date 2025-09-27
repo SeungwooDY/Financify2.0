@@ -44,8 +44,8 @@ function DashboardContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Heading as="h1" size="4xl" className="mb-4 text-balance">No Data Available</Heading>
-          <Text color="muted" className="mb-6 text-pretty">
+          <Heading as="h1" size="4xl" className="mb-4 text-balance force-normal-wrap">No Data Available</Heading>
+          <Text color="muted" className="mb-6 text-pretty force-normal-wrap">
             We couldn&apos;t load your financial data. Please try uploading some transactions first.
           </Text>
           <Button asChild>
@@ -65,7 +65,7 @@ function DashboardContent() {
       <div className="space-y-8 md:space-y-12">
         {/* Quick Actions */}
         <div>
-          <Heading as="h2" size="2xl" className="mb-6 text-balance">Quick Actions</Heading>
+          <Heading as="h2" size="2xl" className="mb-6 text-balance force-normal-wrap">Quick Actions</Heading>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/upload">
               <Card className="hover:shadow-md transition-shadow cursor-pointer">

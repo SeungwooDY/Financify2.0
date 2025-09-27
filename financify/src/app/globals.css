@@ -20,22 +20,28 @@
 
 /* Typography and text wrapping utilities */
 @layer utilities {
-  /* Text wrapping improvements */
+  /* Enhanced text wrapping for better readability */
   .text-balance {
     text-wrap: balance;
   }
   
   .text-pretty {
     text-wrap: pretty;
+    hyphens: auto;
   }
   
   .text-hyphens {
     hyphens: auto;
   }
   
-  /* Optimal line length for readability */
+  /* Optimal line length for different content types */
   .prose-optimal {
-    max-width: 70ch;
+    max-width: 65ch;
+    line-height: 1.6;
+  }
+  
+  .prose-wide {
+    max-width: 80ch;
     line-height: 1.6;
   }
   
@@ -44,17 +50,55 @@
     font-variant-numeric: tabular-nums;
   }
   
-  /* Safe truncation with tooltip support */
+  /* Safe truncation with better word breaking */
   .truncate-safe {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   
+  .truncate-multiline {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
   /* Break long words but preserve readability */
   .break-words-safe {
     word-break: break-word;
     overflow-wrap: break-word;
+  }
+  
+  /* Fix abnormal text wrapping */
+  .text-normal-wrap {
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  
+  /* Ensure proper text flow */
+  .text-flow-normal {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto;
+  }
+  
+  /* Force normal text wrapping - use this for problematic text */
+  .force-normal-wrap {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Override any problematic Tailwind defaults */
+  .text-content {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
 }
 
@@ -422,6 +466,20 @@
     background-color: hsl(var(--bg));
     color: hsl(var(--text));
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Fix abnormal text wrapping globally */
+  p, h1, h2, h3, h4, h5, h6, span, div, label, button, a {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+  
+  /* Ensure proper text flow for all text elements */
+  .text-content, .text-content * {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
 }
 

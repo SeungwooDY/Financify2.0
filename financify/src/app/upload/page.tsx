@@ -39,9 +39,9 @@ export default function UploadPage() {
   return (
     <main className="container-5xl py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Upload Transactions</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-8 w-full text-content">
+          <h1 className="text-3xl font-bold tracking-tight text-balance force-normal-wrap">Upload Transactions</h1>
+          <p className="text-muted-foreground text-pretty max-w-none force-normal-wrap">
             Import your bank statements and transaction data
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function UploadPage() {
         <Card>
           <CardHeader>
             <CardTitle>Upload Files</CardTitle>
-            <CardDescription>
+            <CardDescription className="w-full force-normal-wrap">
               Drag and drop your files here, or click to browse
             </CardDescription>
           </CardHeader>
@@ -74,10 +74,10 @@ export default function UploadPage() {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-lg font-medium mb-2">
+              <p className="text-lg font-medium mb-2 w-full force-normal-wrap">
                 Drop your files here
               </p>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-4 w-full force-normal-wrap">
                 Supports CSV, Excel, and PDF files
               </p>
               <Button variant="outline">
@@ -103,7 +103,7 @@ export default function UploadPage() {
                   <div className="flex items-center space-x-3">
                     <FileText className="h-5 w-5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">{file.name}</p>
+                      <p className="text-sm font-medium truncate break-words" title={file.name}>{file.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {(file.size / 1024).toFixed(1)} KB
                       </p>

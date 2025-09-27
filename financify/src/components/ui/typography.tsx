@@ -123,7 +123,7 @@ export function Prose({ className, children, ...props }: ProseProps) {
   return (
     <div
       className={cn(
-        "prose-optimal leading-relaxed",
+        "prose-optimal text-pretty leading-relaxed",
         className
       )}
       {...props}

@@ -247,14 +247,14 @@ export function TransactionTable({
                       <div className="flex items-center gap-2">
                         <div className="flex-1 min-w-0">
                           <p 
-                            className="truncate-safe font-medium text-foreground"
+                            className="truncate-safe break-words font-medium text-foreground"
                             title={transaction.merchant || transaction.description}
                           >
                             {transaction.merchant || transaction.description}
                           </p>
                           {transaction.merchant && (
                             <p 
-                              className="text-xs text-muted-foreground truncate-safe"
+                              className="text-xs text-muted-foreground truncate-safe break-words"
                               title={transaction.description}
                             >
                               {transaction.description}

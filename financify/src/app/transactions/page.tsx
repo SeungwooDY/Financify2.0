@@ -134,8 +134,8 @@ export default function TransactionsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Heading as="h1" size="4xl" className="mb-2 text-balance">Transactions</Heading>
-          <Text color="muted" size="lg" className="text-pretty">
+          <Heading as="h1" size="4xl" className="mb-2 text-balance w-full force-normal-wrap">Transactions</Heading>
+          <Text color="muted" size="lg" className="text-pretty w-full force-normal-wrap">
             View and manage all your financial transactions
           </Text>
         </motion.div>
