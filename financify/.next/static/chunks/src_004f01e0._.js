@@ -226,7 +226,7 @@ function Providers(param) {
         columnNumber: 5
     }, this);
 }
-_s(Providers, "FRuLzxJco0Cin6Ly7TuZV3Qxh3g=");
+_s(Providers, "AEEM+kb/ZmkK3kxuXxiGr2C+pDk=");
 _c = Providers;
 var _c;
 __turbopack_context__.k.register(_c, "Providers");
@@ -1019,7 +1019,7 @@ function AppShell(param) {
         columnNumber: 5
     }, this);
 }
-_s(AppShell, "M8tzTGTvZZUGZkHh7W2tS3WDdLI=", false, function() {
+_s(AppShell, "zttveruP1fgU4fw6xbXJkfp24L8=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"],
