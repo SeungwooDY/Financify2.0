@@ -19,12 +19,33 @@ export function LoginPage({ onLogin, onCreateAccount, isLoading = false, error }
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (username.trim() && password.trim()) {
-      onLogin(username, password)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const user = {
+      username,
+      password,
+      logged_in: true, // user is logged in
+    };
+
+    try {
+      const res = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+      });
+
+      if (!res.ok) {
+        const err = await res.json(); // await here!
+        throw new Error(err.detail || "Login failed");
+      }
+
+      const data = await res.json(); // await the response JSON
+      console.log("Logged in:", data);
+    // TODO: redirect or update UI
+    } catch (err: any) {
+      console.log("Error logging in:", err.message);
     }
-  }
+};
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">

@@ -21,8 +21,12 @@ export function SignupPage({ onSignup, onBackToLogin, isLoading = false, error }
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  
+  
+  const passwordsMatch = password === confirmPassword
+  const isFormValid = username.trim() && password.trim() && confirmPassword.trim() && passwordsMatch
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault()
     
     if (password !== confirmPassword) {
@@ -32,10 +36,31 @@ export function SignupPage({ onSignup, onBackToLogin, isLoading = false, error }
     if (username.trim() && password.trim()) {
       onSignup(username, password, email || undefined)
     }
-  }
+    const user = {
+      username,
+      password,
+      logged_in: true, // user is logged in
+    };
 
-  const passwordsMatch = password === confirmPassword
-  const isFormValid = username.trim() && password.trim() && confirmPassword.trim() && passwordsMatch
+    try {
+      const res = await fetch("http://localhost:8000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
+      });
+
+      if (!res.ok) {
+        const err = await res.json(); // await here!
+        throw new Error(err.detail || "Registration failed");
+      }
+
+      const data = await res.json(); // await the response JSON
+      console.log("Account created:", data);
+      // TODO: redirect or update UI
+    } catch (err: any) {
+      console.log("Error registering:", err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
