@@ -343,6 +343,275 @@ export async function fetchCurrentUser(): Promise<ApiResponse<User>> {
 }
 
 // ============================================================================
+// BACKEND API INTEGRATION
+// ============================================================================
+
+/**
+ * Parse bank statement file using backend OCR
+ */
+export async function parseBankStatement(file: File, userId?: string): Promise<ApiResponse<any[]>> {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    if (userId) {
+      formData.append('user_id', userId)
+    }
+
+    const response = await fetch('http://localhost:8000/parse-statement/', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    console.log('Backend parse result:', result)
+
+    if (!result.success) {
+      return {
+        success: false,
+        data: null,
+        error: {
+          code: 'PARSE_ERROR',
+          message: result.error || 'Failed to parse bank statement',
+          details: { error: result.error },
+          timestamp: new Date().toISOString()
+        }
+      }
+    }
+
+    // Map backend transaction format to frontend Transaction format
+    const mappedTransactions = result.data.map((txn: any, index: number) => ({
+      id: `parsed_${index}`,
+      date: txn.date,
+      description: txn.description,
+      amount: {
+        amount: Math.round(txn.amount * 100), // Convert to cents
+        currency: "USD",
+        symbol: "$"
+      },
+      category: txn.category,
+      type: txn.type,
+      status: "completed" as const,
+      paymentMethod: txn.payment_method,
+      accountId: "parsed_account",
+      merchant: txn.merchant,
+      location: undefined,
+      tags: [],
+      notes: undefined,
+      metadata: {
+        source: "bank_statement",
+        original_amount: txn.amount,
+        parsed_at: new Date().toISOString()
+      },
+      createdAt: txn.created_at || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }))
+
+    return {
+      success: true,
+      data: mappedTransactions,
+      error: null
+    }
+  } catch (error) {
+    console.error("Error parsing bank statement:", error)
+    return {
+      success: false,
+      data: null,
+      error: {
+        code: 'PARSE_ERROR',
+        message: "Failed to parse bank statement",
+        details: { error: error instanceof Error ? error.message : 'Unknown error' },
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+
+/**
+ * Get user transactions from backend
+ */
+export async function getUserTransactions(userId: string, limit: number = 100): Promise<ApiResponse<Transaction[]>> {
+  try {
+    const response = await fetch(`http://localhost:8000/user/${userId}/transactions?limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
+    const result = await response.json()
+    
+    if (!result.success) {
+      return {
+        success: false,
+        data: null,
+        error: {
+          code: 'FETCH_ERROR',
+          message: result.error || 'Failed to fetch transactions',
+          details: { error: result.error },
+          timestamp: new Date().toISOString()
+        }
+      }
+    }
+
+    // Map backend transaction format to frontend Transaction format
+    const mappedTransactions = result.data.map((txn: any, index: number) => ({
+      id: txn.id || `txn_${index}`,
+      date: txn.date,
+      description: txn.description,
+      amount: {
+        amount: Math.round(txn.amount * 100), // Convert to cents
+        currency: "USD",
+        symbol: "$"
+      },
+      category: txn.category,
+      type: txn.type,
+      status: "completed" as const,
+      paymentMethod: txn.payment_method,
+      accountId: "user_account",
+      merchant: txn.merchant,
+      location: undefined,
+      tags: [],
+      notes: undefined,
+      metadata: {
+        source: txn.source || "backend",
+        original_amount: txn.amount,
+        user_id: txn.user_id
+      },
+      createdAt: txn.created_at || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }))
+    
+    return {
+      success: true,
+      data: mappedTransactions,
+      error: null
+    }
+  } catch (error) {
+    console.error("Error fetching user transactions:", error)
+    return {
+      success: false,
+      data: null,
+      error: {
+        code: 'FETCH_ERROR',
+        message: "Failed to fetch transactions",
+        details: { error: error instanceof Error ? error.message : 'Unknown error' },
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+
+/**
+ * Get dashboard data from backend
+ */
+export async function getDashboardData(userId: string): Promise<ApiResponse<any>> {
+  try {
+    const response = await fetch(`http://localhost:8000/user/${userId}/dashboard-data`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
+    const result = await response.json()
+    
+    if (!result.success) {
+      return {
+        success: false,
+        data: null,
+        error: {
+          code: 'FETCH_ERROR',
+          message: result.error || 'Failed to fetch dashboard data',
+          details: { error: result.error },
+          timestamp: new Date().toISOString()
+        }
+      }
+    }
+    
+    return {
+      success: true,
+      data: result.data,
+      error: null
+    }
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error)
+    return {
+      success: false,
+      data: null,
+      error: {
+        code: 'FETCH_ERROR',
+        message: "Failed to fetch dashboard data",
+        details: { error: error instanceof Error ? error.message : 'Unknown error' },
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+
+/**
+ * Get calendar data from backend
+ */
+export async function getCalendarData(userId: string, year: number, month: number): Promise<ApiResponse<any>> {
+  try {
+    const response = await fetch(`http://localhost:8000/user/${userId}/calendar-data?year=${year}&month=${month}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+    }
+    
+    const result = await response.json()
+    
+    if (!result.success) {
+      return {
+        success: false,
+        data: null,
+        error: {
+          code: 'FETCH_ERROR',
+          message: result.error || 'Failed to fetch calendar data',
+          details: { error: result.error },
+          timestamp: new Date().toISOString()
+        }
+      }
+    }
+    
+    return {
+      success: true,
+      data: result.data,
+      error: null
+    }
+  } catch (error) {
+    console.error("Error fetching calendar data:", error)
+    return {
+      success: false,
+      data: null,
+      error: {
+        code: 'FETCH_ERROR',
+        message: "Failed to fetch calendar data",
+        details: { error: error instanceof Error ? error.message : 'Unknown error' },
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+
+// ============================================================================
 // CURRENCY UTILITIES
 // ============================================================================
 
