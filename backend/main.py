@@ -189,3 +189,4 @@ def register_scholarship(scholar: ScholarInfo):
     return{"msg": "Scholarship information registration complete!"}
 
 
+
