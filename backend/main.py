@@ -7,7 +7,7 @@ import shutil
 import pytesseract
 import imageReader
 from PIL import Image
-from configurations import users_collection, finances_collection,scholarships_information_collection ,scholarships_collection
+#from configurations import users_collection, finances_collection,scholarships_information_collection ,scholarships_collection
 # from sqlalchemy import create_engine, Column, Integer, String
 # from sqlalchemy.orm import declarative_base, sessionmaker
 from fastapi.middleware.cors import CORSMiddleware
@@ -60,20 +60,17 @@ class Finances(BaseModel):
     health: float 
 
 class ScholarInfo(BaseModel):
-    username: str #get this from whichever user is logged in    
-    age: int
-    grade: int
-    gender: str
-    first_gen: bool
-    disability: bool
-    socioeconomic_status: str #low-income,medium-income,high-income
-    military_connections: bool
-    gpa: float
-    sport: str
-    artistic_talent: str
-    field_of_study: str
-    special_interests: str
-
+    username: str = ""#get this from whichever user is logged in    
+    firstName: str
+    lastName:str
+    email:str
+    phone:str
+    address:str
+    monthlyIncome:str
+    monthlyExpenses:str
+    savingsGoal:str
+    emergencyFund:str
+    creditScore:str
 
 origins = [
     "http://localhost:5173",
@@ -187,26 +184,18 @@ async def login(user:User):
 
 #handle logging out tbd
 
-#create a scholarship user
 @app.post("/register_scholarship")
 async def register_scholarship(scholar: ScholarInfo):
     logged_user = users_collection.find_one({"logged_in": True})
+    if not logged_user:
+        raise HTTPException(status_code=401, detail="No user logged in")
+
     scholar_username = logged_user["username"]
+
     scholar_user = {
         "username": scholar_username,
-        "age": scholar.age,
-        "grade":scholar.grade,
-        "gender":scholar.gender,
-        "first_gen":scholar.first_gen,
-        "disability": scholar.disability,
-        "socioeconomic_status": scholar.socioeconomic_status,
-        "military_connections":scholar.military_connections,
-        "gpa":scholar.gpa,
-        "sport":scholar.sport,
-        "artistic_talent":scholar.artistic_talent,
-        "field_of_study": scholar.field_of_study,
-        "special_interests":scholar.special_interests
+        **scholar.model_dump()
     }
     scholarships_information_collection.insert_one(scholar_user)
-    return{"msg": "Scholarship information registration complete!"}
+    return {"msg": "Scholarship information registered successfully"}
 

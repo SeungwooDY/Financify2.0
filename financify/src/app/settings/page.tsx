@@ -66,12 +66,26 @@ export default function SettingsPage() {
       }
     }))
   }
-
   const handleSave = async () => {
     setIsLoading(true)
     try {
+      const payload = {
+        ...settings.personalInfo,
+        ...settings.financialInfo,
+      }
+      console.log(payload)
+      const response = await fetch("http://127.0.0.1:8000/register_scholarship", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+      })
+      if (!response.ok){
+        throw new Error("Failed to save settings")
+      }
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      //await new Promise(resolve => setTimeout(resolve, 1000))
       setIsSaved(true)
       setTimeout(() => setIsSaved(false), 3000)
     } catch (error) {
