@@ -12,6 +12,9 @@ interface TransactionFilters {
   sortBy: 'date' | 'amount' | 'merchant' | 'category'
   sortOrder: 'asc' | 'desc'
   density: 'comfortable' | 'compact'
+  // Quick filter types
+  timeFilters: string[] // 'weekday', 'weekend'
+  locationFilters: string[] // 'on-campus', 'off-campus'
 }
 
 // const DEFAULT_FILTERS: TransactionFilters = {
@@ -36,6 +39,8 @@ export function useTransactionFilters() {
     const sortBy = (searchParams.get('sortBy') as 'date' | 'amount' | 'merchant' | 'category') || 'date'
     const sortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
     const density = (searchParams.get('density') as 'comfortable' | 'compact') || 'comfortable'
+    const timeFilters = searchParams.get('timeFilters')?.split(',').filter(Boolean) || []
+    const locationFilters = searchParams.get('locationFilters')?.split(',').filter(Boolean) || []
 
     return {
       categories,
@@ -44,7 +49,9 @@ export function useTransactionFilters() {
       dateTo,
       sortBy,
       sortOrder,
-      density
+      density,
+      timeFilters,
+      locationFilters
     }
   }, [searchParams])
 
@@ -100,6 +107,24 @@ export function useTransactionFilters() {
       params.set('density', updates.density)
     }
 
+    // Update time filters
+    if (updates.timeFilters !== undefined) {
+      if (updates.timeFilters.length > 0) {
+        params.set('timeFilters', updates.timeFilters.join(','))
+      } else {
+        params.delete('timeFilters')
+      }
+    }
+
+    // Update location filters
+    if (updates.locationFilters !== undefined) {
+      if (updates.locationFilters.length > 0) {
+        params.set('locationFilters', updates.locationFilters.join(','))
+      } else {
+        params.delete('locationFilters')
+      }
+    }
+
     // Update URL
     const newUrl = `${window.location.pathname}?${params.toString()}`
     router.push(newUrl, { scroll: false })
@@ -119,7 +144,9 @@ export function useTransactionFilters() {
       categories: [],
       merchant: '',
       dateFrom: '',
-      dateTo: ''
+      dateTo: '',
+      timeFilters: [],
+      locationFilters: []
     })
   }, [updateFilters])
 
@@ -127,13 +154,35 @@ export function useTransactionFilters() {
     return filters.categories.length > 0 || 
            filters.merchant.length > 0 || 
            filters.dateFrom.length > 0 || 
-           filters.dateTo.length > 0
-  }, [filters.categories, filters.merchant, filters.dateFrom, filters.dateTo])
+           filters.dateTo.length > 0 ||
+           filters.timeFilters.length > 0 ||
+           filters.locationFilters.length > 0
+  }, [filters.categories, filters.merchant, filters.dateFrom, filters.dateTo, filters.timeFilters, filters.locationFilters])
+
+  const toggleTimeFilter = useCallback((filter: string) => {
+    const currentFilters = filters.timeFilters
+    const newFilters = currentFilters.includes(filter)
+      ? currentFilters.filter(f => f !== filter)
+      : [...currentFilters, filter]
+    
+    updateFilters({ timeFilters: newFilters })
+  }, [filters.timeFilters, updateFilters])
+
+  const toggleLocationFilter = useCallback((filter: string) => {
+    const currentFilters = filters.locationFilters
+    const newFilters = currentFilters.includes(filter)
+      ? currentFilters.filter(f => f !== filter)
+      : [...currentFilters, filter]
+    
+    updateFilters({ locationFilters: newFilters })
+  }, [filters.locationFilters, updateFilters])
 
   return {
     filters,
     updateFilters,
     toggleCategory,
+    toggleTimeFilter,
+    toggleLocationFilter,
     clearAllFilters,
     hasActiveFilters
   }

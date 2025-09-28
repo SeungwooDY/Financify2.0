@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useMemo } from "react"
+import { useRouter } from "next/navigation"
 
 export const dynamic = 'force-dynamic'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,12 +10,14 @@ import { useTransactions, useTransactionFilters } from "@/lib/hooks"
 import { 
   TransactionTable,
   TransactionFilters,
-  TransactionDetailsDrawer
+  TransactionDetailsDrawer,
+  TransactionToolbar
 } from "@/components/transactions"
 import { Transaction, TransactionCategory } from "@/lib/types"
 import { AlertCircle } from "lucide-react"
 
 export default function TransactionsPage() {
+  const router = useRouter()
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
@@ -63,6 +66,46 @@ export default function TransactionsPage() {
         }
       }
 
+      // Time filters (weekday/weekend)
+      if (filters.timeFilters.length > 0) {
+        const transactionDate = new Date(transaction.date)
+        const dayOfWeek = transactionDate.getDay() // 0 = Sunday, 6 = Saturday
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+        const isWeekday = !isWeekend
+        
+        const hasTimeMatch = filters.timeFilters.some(filter => {
+          if (filter === 'weekend') return isWeekend
+          if (filter === 'weekday') return isWeekday
+          return false
+        })
+        
+        if (!hasTimeMatch) {
+          return false
+        }
+      }
+
+      // Location filters (on-campus/off-campus)
+      if (filters.locationFilters.length > 0) {
+        // This is a simplified implementation - in a real app, you'd have location data
+        // For now, we'll use merchant names to determine location
+        const merchantText = (transaction.merchant || transaction.description).toLowerCase()
+        const isOnCampus = merchantText.includes('campus') || 
+                          merchantText.includes('university') || 
+                          merchantText.includes('dining') ||
+                          merchantText.includes('bookstore')
+        const isOffCampus = !isOnCampus
+        
+        const hasLocationMatch = filters.locationFilters.some(filter => {
+          if (filter === 'on-campus') return isOnCampus
+          if (filter === 'off-campus') return isOffCampus
+          return false
+        })
+        
+        if (!hasLocationMatch) {
+          return false
+        }
+      }
+
       return true
     })
   }, [allTransactions, filters])
@@ -88,24 +131,69 @@ export default function TransactionsPage() {
     setIsDrawerOpen(false)
   }
 
-  const handleAddTransaction = () => {
-    // TODO: Implement add transaction flow
-    console.log('Add transaction clicked')
+  const handleEditTransaction = (transaction: Transaction) => {
+    // TODO: Implement edit transaction flow
+    console.log('Editing transaction:', transaction)
+    alert('Edit transaction functionality coming soon!')
+  }
+
+  const handleAddTransaction = (transactionData: Partial<Transaction>) => {
+    // TODO: Implement add transaction API call
+    console.log('Adding transaction:', transactionData)
+    
+    // For now, just show a success message
+    alert('Transaction added successfully! (This is a mock implementation)')
   }
 
   const handleImportTransactions = () => {
-    // TODO: Implement import flow
-    console.log('Import transactions clicked')
+    // Create a file input element
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.csv,.json'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        console.log('Importing file:', file.name)
+        alert(`Importing ${file.name}... (This is a mock implementation)`)
+      }
+    }
+    input.click()
   }
 
   const handleExportTransactions = () => {
-    // TODO: Implement export flow
-    console.log('Export transactions clicked')
+    // Create CSV content
+    const csvContent = [
+      ['Date', 'Description', 'Merchant', 'Category', 'Amount', 'Type', 'Status'],
+      ...filteredTransactions.map(t => [
+        t.date,
+        t.description,
+        t.merchant || '',
+        t.category,
+        t.amount.amount.toString(),
+        t.type,
+        t.status
+      ])
+    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n')
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
   }
 
   const handleSettings = () => {
-    // TODO: Implement settings
-    console.log('Settings clicked')
+    // Navigate to settings page
+    router.push('/settings')
+  }
+
+  const handleDensityChange = (density: 'comfortable' | 'compact') => {
+    updateFilters({ density })
   }
 
   if (error) {
@@ -168,6 +256,17 @@ export default function TransactionsPage() {
           <div className="col-span-12 lg:col-span-9">
             <Card className="card-elevated">
               <CardContent className="p-0">
+                <TransactionToolbar
+                  totalCount={allTransactions.length}
+                  filteredCount={filteredTransactions.length}
+                  density={filters.density}
+                  onDensityChange={handleDensityChange}
+                  onAddTransaction={handleAddTransaction}
+                  onImportTransactions={handleImportTransactions}
+                  onExportTransactions={handleExportTransactions}
+                  onSettings={handleSettings}
+                  className="p-4 border-b"
+                />
                 {isLoading ? (
                   <div className="p-8">
                     <div className="space-y-4">
@@ -194,6 +293,7 @@ export default function TransactionsPage() {
                     }}
                     density={filters.density}
                     onRowClick={handleRowClick}
+                    onEditTransaction={handleEditTransaction}
                     selectedTransactionId={selectedTransaction?.id}
                   />
                 )}

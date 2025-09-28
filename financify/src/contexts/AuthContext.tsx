@@ -33,10 +33,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check localStorage for existing session
-        const storedUser = localStorage.getItem('financify_user')
-        if (storedUser) {
-          setUser(JSON.parse(storedUser))
+        // Check if we're in the browser before accessing localStorage
+        if (typeof window !== 'undefined') {
+          const storedUser = localStorage.getItem('financify_user')
+          if (storedUser) {
+            setUser(JSON.parse(storedUser))
+          }
         }
       } catch (err) {
         console.error('Error checking auth:', err)
@@ -65,7 +67,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         
         setUser(userData)
-        localStorage.setItem('financify_user', JSON.stringify(userData))
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('financify_user', JSON.stringify(userData))
+        }
       } else {
         throw new Error('Please enter both username and password')
       }
@@ -95,7 +99,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         
         setUser(userData)
-        localStorage.setItem('financify_user', JSON.stringify(userData))
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('financify_user', JSON.stringify(userData))
+        }
       } else {
         throw new Error('Please enter both username and password')
       }
@@ -110,7 +116,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem('financify_user')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('financify_user')
+    }
     setError(null)
   }
 

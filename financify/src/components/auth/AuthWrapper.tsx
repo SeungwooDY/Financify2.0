@@ -49,7 +49,7 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
           }}
           onBackToLogin={() => setShowSignup(false)}
           isLoading={isLoading}
-          error={error}
+          error={error || undefined}
         />
       )
     }
@@ -65,7 +65,7 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
         }}
         onCreateAccount={() => setShowSignup(true)}
         isLoading={isLoading}
-        error={error}
+        error={error || undefined}
       />
     )
   }

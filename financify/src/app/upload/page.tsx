@@ -147,7 +147,7 @@ export default function UploadPage() {
                           wordBreak: 'normal',
                           lineHeight: '1.6'
                         }}>
-                          Snap a photo of your receipt or statement using your device's camera
+                          Snap a photo of your receipt or statement using your device&apos;s camera
                         </p>
                       </div>
                     </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
@@ -9,6 +9,7 @@ import {
   Home,
   Building2
 } from "lucide-react"
+import { useTransactionFilters } from "@/lib/hooks"
 
 interface QuickFiltersProps {
   className?: string
@@ -32,18 +33,14 @@ const FILTER_GROUPS = [
 ]
 
 export function QuickFilters({ className }: QuickFiltersProps) {
-  const [selectedFilters, setSelectedFilters] = useState<Set<string>>(new Set())
+  const { filters, toggleTimeFilter, toggleLocationFilter } = useTransactionFilters()
 
-  const toggleFilter = (filterId: string) => {
-    setSelectedFilters(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(filterId)) {
-        newSet.delete(filterId)
-      } else {
-        newSet.add(filterId)
-      }
-      return newSet
-    })
+  const toggleFilter = (filterId: string, filterType: 'time' | 'location') => {
+    if (filterType === 'time') {
+      toggleTimeFilter(filterId)
+    } else {
+      toggleLocationFilter(filterId)
+    }
   }
 
   return (
@@ -64,14 +61,17 @@ export function QuickFilters({ className }: QuickFiltersProps) {
                 <div className="flex flex-wrap gap-2">
                   {group.filters.map((filter) => {
                     const Icon = filter.icon
-                    const isSelected = selectedFilters.has(filter.id)
+                    const filterType = group.label === 'Time' ? 'time' : 'location'
+                    const isSelected = filterType === 'time' 
+                      ? filters.timeFilters.includes(filter.id)
+                      : filters.locationFilters.includes(filter.id)
                     
                     return (
                       <Button
                         key={filter.id}
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
-                        onClick={() => toggleFilter(filter.id)}
+                        onClick={() => toggleFilter(filter.id, filterType)}
                         className={`
                           text-xs font-medium transition-all duration-200
                           ${isSelected 
