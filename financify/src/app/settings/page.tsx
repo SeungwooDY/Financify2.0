@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +34,7 @@ export default function SettingsPage() {
   const { user, logout } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true)
   
   const [settings, setSettings] = useState<UserSettings>({
     personalInfo: {
@@ -57,6 +58,33 @@ export default function SettingsPage() {
     }
   })
 
+  // Load existing settings on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/get_settings', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings) {
+            setSettings(data.settings)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error)
+      } finally {
+        setIsLoadingSettings(false)
+      }
+    }
+
+    loadSettings()
+  }, [])
+
   const handleInputChange = (section: keyof UserSettings, field: string, value: string | boolean) => {
     setSettings(prev => ({
       ...prev,
@@ -69,30 +97,40 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      const payload = {
-        ...settings.personalInfo,
-        ...settings.financialInfo,
-      }
-      console.log(payload)
-      const response = await fetch("http://127.0.0.1:8000/register_scholarship", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+      const response = await fetch("http://localhost:8000/save_settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(settings)
       })
-      if (!response.ok){
-        throw new Error("Failed to save settings")
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.detail || "Failed to save settings")
       }
-      // Simulate API call
-      //await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const data = await response.json()
+      console.log('Settings saved:', data)
       setIsSaved(true)
       setTimeout(() => setIsSaved(false), 3000)
     } catch (error) {
       console.error('Error saving settings:', error)
+      alert('Failed to save settings. Please try again.')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isLoadingSettings) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-accent-1 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <Text color="muted" className="text-xl">Loading settings...</Text>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -345,7 +383,7 @@ export default function SettingsPage() {
                   ) : (
                     <div className="flex items-center space-x-2">
                       <Save className="w-5 h-5" />
-                      <span>{isSaved ? 'Saved!' : 'Save Information'}</span>
+                      <span>{isSaved ? 'Preferences updated!' : 'Save Information'}</span>
                     </div>
                   )}
                 </Button>

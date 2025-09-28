@@ -14,6 +14,11 @@ class User(BaseModel):
     password: str
     logged_in: bool = False
 
+class UserSettings(BaseModel):
+    personalInfo: dict
+    financialInfo: dict
+    preferences: dict
+
 # CORS configuration
 origins = [
     "http://localhost:3000",
@@ -75,6 +80,59 @@ async def login(user: User):
 @app.get("/users")
 async def get_users():
     return {"users": users_collection}
+
+@app.post("/save_settings")
+async def save_settings(settings: UserSettings):
+    logged_user = next((u for u in users_collection if u.get("logged_in") == True), None)
+    if not logged_user:
+        raise HTTPException(status_code=401, detail="No user logged in")
+
+    username = logged_user["username"]
+    
+    # Update user with settings
+    for u in users_collection:
+        if u["username"] == username:
+            u["settings"] = settings.model_dump()
+            break
+    
+    return {"msg": "Preferences updated successfully"}
+
+@app.get("/get_settings")
+async def get_settings():
+    logged_user = next((u for u in users_collection if u.get("logged_in") == True), None)
+    if not logged_user:
+        raise HTTPException(status_code=401, detail="No user logged in")
+
+    username = logged_user["username"]
+    user_data = next((u for u in users_collection if u["username"] == username), None)
+    
+    if user_data and "settings" in user_data:
+        return {"settings": user_data["settings"]}
+    else:
+        # Return default settings if none exist
+        return {
+            "settings": {
+                "personalInfo": {
+                    "firstName": username.split(' ')[0] if username else '',
+                    "lastName": username.split(' ')[1] if len(username.split(' ')) > 1 else '',
+                    "email": user_data.get("email", ""),
+                    "phone": "",
+                    "address": ""
+                },
+                "financialInfo": {
+                    "monthlyIncome": "",
+                    "monthlyExpenses": "",
+                    "savingsGoal": "",
+                    "emergencyFund": "",
+                    "creditScore": ""
+                },
+                "preferences": {
+                    "currency": "USD",
+                    "timezone": "America/New_York",
+                    "notifications": True
+                }
+            }
+        }
 
 if __name__ == "__main__":
     print("Starting Financify Backend...")

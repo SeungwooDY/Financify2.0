@@ -39,6 +39,10 @@ scholarships_collection = db["scholarships"]
 
 app = FastAPI()
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
+
 class User(BaseModel):
     username: str
     password: str
@@ -71,6 +75,11 @@ class ScholarInfo(BaseModel):
     savingsGoal:str
     emergencyFund:str
     creditScore:str
+
+class UserSettings(BaseModel):
+    personalInfo: dict
+    financialInfo: dict
+    preferences: dict
 
 origins = [
     "http://localhost:5173",
@@ -198,4 +207,67 @@ async def register_scholarship(scholar: ScholarInfo):
     }
     scholarships_information_collection.insert_one(scholar_user)
     return {"msg": "Scholarship information registered successfully"}
+
+@app.post("/save_settings")
+async def save_settings(settings: UserSettings):
+    logged_user = users_collection.find_one({"logged_in": True})
+    if not logged_user:
+        raise HTTPException(status_code=401, detail="No user logged in")
+
+    username = logged_user["username"]
+    
+    # Check if user settings already exist
+    existing_settings = users_collection.find_one({"username": username, "settings": {"$exists": True}})
+    
+    if existing_settings:
+        # Update existing settings
+        users_collection.update_one(
+            {"username": username},
+            {"$set": {"settings": settings.model_dump()}}
+        )
+    else:
+        # Insert new settings
+        users_collection.update_one(
+            {"username": username},
+            {"$set": {"settings": settings.model_dump()}}
+        )
+    
+    return {"msg": "Preferences updated successfully"}
+
+@app.get("/get_settings")
+async def get_settings():
+    logged_user = users_collection.find_one({"logged_in": True})
+    if not logged_user:
+        raise HTTPException(status_code=401, detail="No user logged in")
+
+    username = logged_user["username"]
+    user_data = users_collection.find_one({"username": username})
+    
+    if user_data and "settings" in user_data:
+        return {"settings": user_data["settings"]}
+    else:
+        # Return default settings if none exist
+        return {
+            "settings": {
+                "personalInfo": {
+                    "firstName": username.split(' ')[0] if username else '',
+                    "lastName": username.split(' ')[1] if len(username.split(' ')) > 1 else '',
+                    "email": user_data.get("email", ""),
+                    "phone": "",
+                    "address": ""
+                },
+                "financialInfo": {
+                    "monthlyIncome": "",
+                    "monthlyExpenses": "",
+                    "savingsGoal": "",
+                    "emergencyFund": "",
+                    "creditScore": ""
+                },
+                "preferences": {
+                    "currency": "USD",
+                    "timezone": "America/New_York",
+                    "notifications": True
+                }
+            }
+        }
 
