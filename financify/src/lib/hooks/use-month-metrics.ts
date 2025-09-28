@@ -18,5 +18,7 @@ export function useMonthMetrics(month: string = new Date().toISOString().slice(0
       return fetchMonthMetrics(month)
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1, // Only retry once
+    retryDelay: 1000, // Wait 1 second between retries
   })
 }

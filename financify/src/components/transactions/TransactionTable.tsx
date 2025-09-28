@@ -33,6 +33,7 @@ interface TransactionTableProps {
   onSort: (column: 'date' | 'amount' | 'merchant' | 'category') => void
   density: 'comfortable' | 'compact'
   onRowClick: (transaction: Transaction) => void
+  onEditTransaction: (transaction: Transaction) => void
   selectedTransactionId?: string
   className?: string
 }
@@ -74,6 +75,7 @@ export function TransactionTable({
   onSort,
   density,
   onRowClick,
+  onEditTransaction,
   selectedTransactionId,
   className
 }: TransactionTableProps) {
@@ -349,8 +351,7 @@ export function TransactionTable({
                           className="h-8 w-8 p-0"
                           onClick={(e) => {
                             e.stopPropagation()
-                            // TODO: Implement edit functionality
-                            console.log('Edit transaction:', transaction.id)
+                            onEditTransaction(transaction)
                           }}
                           aria-label="Edit transaction"
                         >

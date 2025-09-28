@@ -27,10 +27,12 @@ function AuthProvider(param) {
             const checkAuth = {
                 "AuthProvider.useEffect.checkAuth": async ()=>{
                     try {
-                        // Check localStorage for existing session
-                        const storedUser = localStorage.getItem('financify_user');
-                        if (storedUser) {
-                            setUser(JSON.parse(storedUser));
+                        // Check if we're in the browser before accessing localStorage
+                        if ("TURBOPACK compile-time truthy", 1) {
+                            const storedUser = localStorage.getItem('financify_user');
+                            if (storedUser) {
+                                setUser(JSON.parse(storedUser));
+                            }
                         }
                     } catch (err) {
                         console.error('Error checking auth:', err);
@@ -56,7 +58,9 @@ function AuthProvider(param) {
                     email: "".concat(username, "@example.com")
                 };
                 setUser(userData);
-                localStorage.setItem('financify_user', JSON.stringify(userData));
+                if ("TURBOPACK compile-time truthy", 1) {
+                    localStorage.setItem('financify_user', JSON.stringify(userData));
+                }
             } else {
                 throw new Error('Please enter both username and password');
             }
@@ -82,7 +86,9 @@ function AuthProvider(param) {
                     email: email || "".concat(username, "@example.com")
                 };
                 setUser(userData);
-                localStorage.setItem('financify_user', JSON.stringify(userData));
+                if ("TURBOPACK compile-time truthy", 1) {
+                    localStorage.setItem('financify_user', JSON.stringify(userData));
+                }
             } else {
                 throw new Error('Please enter both username and password');
             }
@@ -96,7 +102,9 @@ function AuthProvider(param) {
     };
     const logout = ()=>{
         setUser(null);
-        localStorage.removeItem('financify_user');
+        if ("TURBOPACK compile-time truthy", 1) {
+            localStorage.removeItem('financify_user');
+        }
         setError(null);
     };
     const value = {
@@ -113,7 +121,7 @@ function AuthProvider(param) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/contexts/AuthContext.tsx",
-        lineNumber: 128,
+        lineNumber: 136,
         columnNumber: 5
     }, this);
 }
@@ -218,7 +226,7 @@ function Providers(param) {
         columnNumber: 5
     }, this);
 }
-_s(Providers, "AEEM+kb/ZmkK3kxuXxiGr2C+pDk=");
+_s(Providers, "FRuLzxJco0Cin6Ly7TuZV3Qxh3g=");
 _c = Providers;
 var _c;
 __turbopack_context__.k.register(_c, "Providers");
@@ -1011,7 +1019,7 @@ function AppShell(param) {
         columnNumber: 5
     }, this);
 }
-_s(AppShell, "zttveruP1fgU4fw6xbXJkfp24L8=", false, function() {
+_s(AppShell, "M8tzTGTvZZUGZkHh7W2tS3WDdLI=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["usePathname"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"],
@@ -2826,7 +2834,7 @@ function AuthWrapper(param) {
                 },
                 onBackToLogin: ()=>setShowSignup(false),
                 isLoading: isLoading,
-                error: error
+                error: error || undefined
             }, void 0, false, {
                 fileName: "[project]/src/components/auth/AuthWrapper.tsx",
                 lineNumber: 42,
@@ -2843,7 +2851,7 @@ function AuthWrapper(param) {
             },
             onCreateAccount: ()=>setShowSignup(true),
             isLoading: isLoading,
-            error: error
+            error: error || undefined
         }, void 0, false, {
             fileName: "[project]/src/components/auth/AuthWrapper.tsx",
             lineNumber: 58,

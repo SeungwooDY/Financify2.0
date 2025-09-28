@@ -5,7 +5,7 @@ import { useMonthMetrics } from "@/lib/hooks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heading, Text } from "@/components/ui/typography"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { 
   WrappedSummaryCard,
@@ -21,10 +21,15 @@ export const dynamic = 'force-dynamic'
 
 function DashboardContent() {
   const searchParams = useSearchParams()
-  const month = searchParams.get('month') || '2025-08'
+  const router = useRouter()
+  const month = searchParams.get('month') || new Date().toISOString().slice(0, 7)
   
   // const { data: user } = useCurrentUser()
   const { data: monthMetrics, isLoading: metricsLoading } = useMonthMetrics(month)
+
+  const handleCategoryFilter = (category: string) => {
+    router.push(`/transactions?categories=${encodeURIComponent(category)}`)
+  }
 
   // Show loading state
   if (metricsLoading) {
@@ -161,7 +166,10 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-accent-1/10 to-accent-1/5 border border-accent-1/20 cursor-pointer hover:from-accent-1/20 hover:to-accent-1/10 hover:shadow-md transition-all duration-200 group">
+                  <div 
+                    className="p-4 rounded-xl bg-gradient-to-r from-accent-1/10 to-accent-1/5 border border-accent-1/20 cursor-pointer hover:from-accent-1/20 hover:to-accent-1/10 hover:shadow-md transition-all duration-200 group"
+                    onClick={() => handleCategoryFilter('Food & Dining')}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-text">
                         Late-night food
@@ -175,7 +183,10 @@ function DashboardContent() {
                     </div>
                   </div>
                   
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-accent-2/10 to-accent-2/5 border border-accent-2/20 cursor-pointer hover:from-accent-2/20 hover:to-accent-2/10 hover:shadow-md transition-all duration-200 group">
+                  <div 
+                    className="p-4 rounded-xl bg-gradient-to-r from-accent-2/10 to-accent-2/5 border border-accent-2/20 cursor-pointer hover:from-accent-2/20 hover:to-accent-2/10 hover:shadow-md transition-all duration-200 group"
+                    onClick={() => handleCategoryFilter('Transportation')}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-text">
                         Transportation
@@ -189,7 +200,10 @@ function DashboardContent() {
                     </div>
                   </div>
                   
-                  <div className="p-4 rounded-xl bg-gradient-to-r from-accent-3/10 to-accent-3/5 border border-accent-3/20 cursor-pointer hover:from-accent-3/20 hover:to-accent-3/10 hover:shadow-md transition-all duration-200 group">
+                  <div 
+                    className="p-4 rounded-xl bg-gradient-to-r from-accent-3/10 to-accent-3/5 border border-accent-3/20 cursor-pointer hover:from-accent-3/20 hover:to-accent-3/10 hover:shadow-md transition-all duration-200 group"
+                    onClick={() => handleCategoryFilter('Education')}
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-text">
                         Books & supplies

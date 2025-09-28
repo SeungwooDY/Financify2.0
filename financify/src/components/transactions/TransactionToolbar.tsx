@@ -4,7 +4,6 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
-  Plus,
   Download,
   Upload,
   Settings,
@@ -12,13 +11,15 @@ import {
   List
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AddTransactionModal } from "./AddTransactionModal"
+import { Transaction } from "@/lib/types"
 
 interface TransactionToolbarProps {
   totalCount: number
   filteredCount: number
   density: 'comfortable' | 'compact'
   onDensityChange: (density: 'comfortable' | 'compact') => void
-  onAddTransaction: () => void
+  onAddTransaction: (transaction: Partial<Transaction>) => void
   onImportTransactions: () => void
   onExportTransactions: () => void
   onSettings: () => void
@@ -118,10 +119,7 @@ export function TransactionToolbar({
         </Button>
 
         {/* Add Transaction */}
-        <Button onClick={onAddTransaction}>
-          <Plus className="h-4 w-4 mr-1" />
-          Add Transaction
-        </Button>
+        <AddTransactionModal onAddTransaction={onAddTransaction} />
       </div>
     </div>
   )

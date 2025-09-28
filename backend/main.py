@@ -15,6 +15,27 @@ from pydantic import BaseModel
 from typing import List, Optional, Annotated
 import re
 import io
+import os
+from pymongo import MongoClient
+from dotenv import load_dotenv
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+# Load variables from .env
+load_dotenv()  # looks for .env in the project root
+
+# Get the Mongo URI
+MONGO_URI = os.getenv("MONGO_URI")
+
+uri = MONGO_URI
+#password = 9MfjR3Mhl2KyTmxN
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
+
+db = client["financify"]
+users_collection = db["users"]
+finances_collection = db["finances"]
+scholarships_information_collection = db["scholarships_information"]
+scholarships_collection = db["scholarships"]
 
 app = FastAPI()
 
@@ -32,6 +53,7 @@ class Finances(BaseModel):
     transportation: float
     shopping: float
     travel:float
+    housing: float
     entertainment: float
     education: float
     tax: float
@@ -55,6 +77,7 @@ class ScholarInfo(BaseModel):
 
 origins = [
     "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -147,13 +170,13 @@ def register(user:User):
     existing_user = users_collection.find_one({"username": user.username})
     if existing_user:
         raise HTTPException(status_code=400,detail="Username already exists")
-    new_user = {"username": user.username,"password":user.password}
+    new_user = {"username": user.username,"password":user.password,"logged_in":False}
     users_collection.insert_one(new_user)
     return {"msg": "User registered successfully"}
 
 #handle logging in
 @app.post("/login")
-def login(user:User):
+async def login(user:User):
     db_user = users_collection.find_one({"username":user.username})
     if not db_user:
         return HTTPException(status_code=401,detail="User not found")
@@ -166,7 +189,7 @@ def login(user:User):
 
 #create a scholarship user
 @app.post("/register_scholarship")
-def register_scholarship(scholar: ScholarInfo):
+async def register_scholarship(scholar: ScholarInfo):
     logged_user = users_collection.find_one({"logged_in": True})
     scholar_username = logged_user["username"]
     scholar_user = {
