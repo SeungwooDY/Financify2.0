@@ -14,7 +14,7 @@ import {
   X,
   GraduationCap
 } from "@/lib/icons"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
   DropdownMenu,

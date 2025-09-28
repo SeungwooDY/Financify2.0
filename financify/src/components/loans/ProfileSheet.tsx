@@ -5,7 +5,7 @@ import { StudentProfile } from "@/lib/loans/types"
 import { Button } from "@/components/ui/Button"
 import { Input } from "@/components/ui/Input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/Checkbox"
 import { X } from "lucide-react"
 
 interface ProfileSheetProps {
