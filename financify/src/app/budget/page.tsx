@@ -4,7 +4,7 @@ import React, { Suspense } from "react"
 
 export const dynamic = 'force-dynamic'
 import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/Card"
 import { Heading, Text } from "@/components/ui/typography"
 import { useMonthMetrics, useBudgetMode } from "@/lib/hooks"
 import { 

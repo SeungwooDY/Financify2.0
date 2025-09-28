@@ -2,8 +2,8 @@
 
 import { Suspense } from "react"
 import { useMonthMetrics } from "@/lib/hooks"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Button } from "@/components/ui/Button"
 import { Heading, Text } from "@/components/ui/typography"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"

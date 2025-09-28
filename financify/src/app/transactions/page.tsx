@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 
 export const dynamic = 'force-dynamic'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Heading, Text } from "@/components/ui/typography"
 import { useTransactions, useTransactionFilters } from "@/lib/hooks"
 import { 

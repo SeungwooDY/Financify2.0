@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/Card"
+import { Button } from "@/components/ui/Button"
 import { Heading, Text } from "@/components/ui/typography"
 import { AlertCircle, RefreshCw } from "lucide-react"
 

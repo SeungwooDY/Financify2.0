@@ -2,7 +2,7 @@
 
 import { Navigation } from "./navigation"
 import { useAuth } from "@/contexts/AuthContext"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
   DropdownMenu,
