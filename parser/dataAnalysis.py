@@ -1,6 +1,9 @@
 from collections import defaultdict
 import datetime
-from parser.pdfParser import extract_transactions_from_pdf
+from parser.parser import get_transactions
+
+file_path = "/path/to/your/statement.pdf"  # or .csv, .png, etc.
+transactions = get_transactions(file_path)
 
 def analyze_transaction_data(transactions):
     """
@@ -42,6 +45,3 @@ def analyze_transaction_data(transactions):
         'category_totals': dict(category_totals),
         'monthly_totals': dict(monthly_totals)
     }
-
-transactions = extract_transactions_from_pdf("/path/to/your/statement.pdf")
-# Now you can analyze the transactions list
