@@ -2,6 +2,7 @@ import csv
 import re
 import sys
 from bank_profiles import BANK_PROFILES
+from category_matcher import gemini_categorize_transaction
 
 def extract_transactions_from_csv(csv_path):
 	"""
@@ -28,14 +29,23 @@ def extract_transactions_from_csv(csv_path):
 		# If header row is not a real header, treat all rows as data using fallback_columns
 		fallback = profile.get('fallback_columns')
 		has_named = any(find_idx(columns.get(field, [])) is not None for field in ['date', 'amount', 'description'])
+		def get_category(description):
+			while True:
+				category = gemini_categorize_transaction(description)
+				if category is not None:
+					return category
+				import time
+				print("Rate limit hit (429). Waiting 60 seconds before retrying...")
+				time.sleep(60)
 		if fallback and not has_named:
 			all_rows = [header] + list(reader) if header else list(reader)
 			for row in all_rows:
+				description = row[fallback['description']] if len(row) > fallback['description'] else ' '.join(row)
 				transactions.append({
 					'amount': row[fallback['amount']] if len(row) > fallback['amount'] else None,
 					'date': row[fallback['date']] if len(row) > fallback['date'] else None,
-					'category': row[fallback['category']] if len(row) > fallback['category'] else None,
-					'description': row[fallback['description']] if len(row) > fallback['description'] else ' '.join(row)
+					'category': get_category(description),
+					'description': description
 				})
 		else:
 			date_idx = find_idx(columns.get('date', []))
@@ -45,13 +55,12 @@ def extract_transactions_from_csv(csv_path):
 			for row in reader:
 				amount = row[amount_idx] if amount_idx is not None and amount_idx < len(row) else None
 				date = row[date_idx] if date_idx is not None and date_idx < len(row) else None
-				category = row[cat_idx] if cat_idx is not None and cat_idx < len(row) else None
 				description = row[desc_idx] if desc_idx is not None and desc_idx < len(row) else ' '.join(row)
 				if amount or date:
 					transactions.append({
 						'amount': amount,
 						'date': date,
-						'category': category,
+						'category': get_category(description),
 						'description': description
 					})
 	return transactions
