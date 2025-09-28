@@ -1,8 +1,4 @@
 import uvicorn
-<<<<<<< Updated upstream
-import fastapi
-import pydantic
-=======
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
@@ -192,4 +188,4 @@ def register_scholarship(scholar: ScholarInfo):
     scholarships_information_collection.insert_one(scholar_user)
     return{"msg": "Scholarship information registration complete!"}
 
->>>>>>> Stashed changes
+
