@@ -3,7 +3,7 @@
 import { LoanRecommendation } from "@/lib/loans/types"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Badge } from "@/components/ui/Badge"
+import { Badge } from "@/components/ui/badge"
 import { ExternalLink, X, CheckCircle, AlertCircle, Info, FileText } from "lucide-react"
 
 interface DetailDrawerProps {

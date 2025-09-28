@@ -1,7 +1,7 @@
 "use client"
 
 import React, { Suspense, lazy } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/Card"
 // import { cn } from "@/lib/utils"
 
 // Lazy load chart components

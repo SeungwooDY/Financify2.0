@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { MonthMetrics } from "@/lib/types"
 import { formatCurrency } from "@/lib/api"
 import { cn } from "@/lib/utils"

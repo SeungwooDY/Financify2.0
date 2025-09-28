@@ -4,7 +4,7 @@ import { useState } from "react"
 import { LoanProduct, WebLoanResult, LoanRecommendation } from "@/lib/loans/types"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
-import { Badge } from "@/components/ui/Badge"
+import { Badge } from "@/components/ui/badge"
 import { ExternalLink, Star, AlertCircle, CheckCircle, Info } from "lucide-react"
 
 interface LoanCardProps {

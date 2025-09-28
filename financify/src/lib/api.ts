@@ -342,6 +342,53 @@ export async function fetchCurrentUser(): Promise<ApiResponse<User>> {
   }
 }
 
+/**
+ * Fetch calendar data for a specific month
+ * 
+ * @param userId - User ID
+ * @param year - Year
+ * @param month - Month (1-12)
+ * @returns Promise<ApiResponse<any>>
+ * 
+ * Real API endpoint: GET /api/user/{userId}/calendar-data?year={year}&month={month}
+ */
+export async function getCalendarData(
+  userId: string, 
+  year: number, 
+  month: number
+): Promise<ApiResponse<any>> {
+  try {
+    // In production, replace with:
+    // return apiClient.get<any>(`/user/${userId}/calendar-data?year=${year}&month=${month}`)
+    
+    // For now, return a mock response that matches the backend API format
+    const mockCalendarData = {
+      year,
+      month,
+      daily_data: {},
+      total_transactions: 0
+    }
+    
+    return {
+      success: true,
+      data: mockCalendarData,
+      error: null
+    }
+  } catch (error) {
+    console.error("Error fetching calendar data:", error)
+    return {
+      success: false,
+      data: null,
+      error: {
+        code: 'CALENDAR_DATA_ERROR',
+        message: "Failed to fetch calendar data",
+        details: { userId, year, month, error: error instanceof Error ? error.message : 'Unknown error' },
+        timestamp: new Date().toISOString()
+      }
+    }
+  }
+}
+
 // ============================================================================
 // CURRENCY UTILITIES
 // ============================================================================

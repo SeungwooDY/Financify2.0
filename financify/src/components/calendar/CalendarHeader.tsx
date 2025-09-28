@@ -2,8 +2,8 @@
 
 import React from "react"
 // import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/Button"
+import { Card, CardHeader, CardTitle } from "@/components/ui/Card"
 import { ChevronLeft, ChevronRight, Calendar, RotateCcw } from "lucide-react"
 import { cn } from "@/lib/utils"
 

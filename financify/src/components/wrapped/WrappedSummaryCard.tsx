@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/Card"
 import { MonthMetrics } from "@/lib/types"
 import { getKPIColor } from "@/lib/theme"
 import { 
