@@ -53,6 +53,8 @@ except Exception as e:
     
     users_collection = DummyCollection()
     finances_collection = DummyCollection()
+    scholarships_information_collection = DummyCollection()
+    scholarships_collection = DummyCollection()
 
 if DB_AVAILABLE:
     db = client["financify"]
