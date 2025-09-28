@@ -21,31 +21,15 @@ export function LoginPage({ onLogin, onCreateAccount, isLoading = false, error }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = {
-      username,
-      password,
-      logged_in: true, // user is logged in
-    };
-
-    try {
-      const res = await fetch("http://localhost:8000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
-      });
-
-      if (!res.ok) {
-        const err = await res.json(); // await here!
-        throw new Error(err.detail || "Login failed");
-      }
-
-      const data = await res.json(); // await the response JSON
-      console.log("Logged in:", data);
-    // TODO: redirect or update UI
-    } catch (err: any) {
-      console.log("Error logging in:", err.message);
+    console.log('🖱️ Login button clicked!');
+    
+    if (username.trim() && password.trim()) {
+      console.log('📝 Calling onLogin with:', username);
+      await onLogin(username, password);
+    } else {
+      console.log('❌ Missing username or password');
     }
-};
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
