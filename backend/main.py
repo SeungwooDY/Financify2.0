@@ -1,12 +1,13 @@
 import uvicorn
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import os
 import shutil
 import pytesseract
 import imageReader
 from PIL import Image
-
+from configurations import users_collection, finances_collection,scholarships_information_collection ,scholarships_collection
 # from sqlalchemy import create_engine, Column, Integer, String
 # from sqlalchemy.orm import declarative_base, sessionmaker
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +17,41 @@ import re
 import io
 
 app = FastAPI()
+
+class User(BaseModel):
+    username: str
+    password: str
+    logged_in: bool = False
+
+class Finances(BaseModel):
+    month: str
+    total_spendings: float
+    total_earnings:float
+    net_balance: float #earnings - spending
+    food: float
+    transportation: float
+    shopping: float
+    travel:float
+    entertainment: float
+    education: float
+    tax: float
+    health: float 
+
+class ScholarInfo(BaseModel):
+    username: str #get this from whichever user is logged in    
+    age: int
+    grade: int
+    gender: str
+    first_gen: bool
+    disability: bool
+    socioeconomic_status: str #low-income,medium-income,high-income
+    military_connections: bool
+    gpa: float
+    sport: str
+    artistic_talent: str
+    field_of_study: str
+    special_interests: str
+
 
 origins = [
     "http://localhost:5173",
@@ -103,3 +139,51 @@ async def process_image(file: UploadFile = File(...)):
         return {"sentences": sentences}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+    
+#handle user registration
+@app.post("/register")
+def register(user:User):
+    #check if the user already exists
+    existing_user = users_collection.find_one({"username": user.username})
+    if existing_user:
+        raise HTTPException(status_code=400,detail="Username already exists")
+    new_user = {"username": user.username,"password":user.password}
+    users_collection.insert_one(new_user)
+    return {"msg": "User registered successfully"}
+
+#handle logging in
+@app.post("/login")
+def login(user:User):
+    db_user = users_collection.find_one({"username":user.username})
+    if not db_user:
+        return HTTPException(status_code=401,detail="User not found")
+    if not (user.password == db_user["password"]):
+        return HTTPException(status_code=401,detail="Incorrect ")
+    users_collection.update_one({"username":user.username},{"$set":{"logged_in":True}})
+    return {"msg": "Log in complete"}
+
+#handle logging out tbd
+
+#create a scholarship user
+@app.post("/register_scholarship")
+def register_scholarship(scholar: ScholarInfo):
+    logged_user = users_collection.find_one({"logged_in": True})
+    scholar_username = logged_user["username"]
+    scholar_user = {
+        "username": scholar_username,
+        "age": scholar.age,
+        "grade":scholar.grade,
+        "gender":scholar.gender,
+        "first_gen":scholar.first_gen,
+        "disability": scholar.disability,
+        "socioeconomic_status": scholar.socioeconomic_status,
+        "military_connections":scholar.military_connections,
+        "gpa":scholar.gpa,
+        "sport":scholar.sport,
+        "artistic_talent":scholar.artistic_talent,
+        "field_of_study": scholar.field_of_study,
+        "special_interests":scholar.special_interests
+    }
+    scholarships_information_collection.insert_one(scholar_user)
+    return{"msg": "Scholarship information registration complete!"}
+
