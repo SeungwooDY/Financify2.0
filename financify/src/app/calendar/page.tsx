@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo, Suspense } from "react"
+import React, { useState, useMemo, Suspense, useEffect } from "react"
 
 export const dynamic = 'force-dynamic'
 import { motion } from "framer-motion"
@@ -10,21 +10,74 @@ import {
   CalendarGrid,
   CalendarHeader,
   CalendarSummary,
-  SpendingLegend
+  SpendingLegend,
+  DayTransactionModal
 } from "@/components/calendar"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/Card"
 import { Heading, Text } from "@/components/ui/typography"
 import { AlertCircle } from "lucide-react"
+import { getCalendarData } from "@/lib/api"
 
 function CalendarContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const month = searchParams.get('month') || '2025-08'
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [calendarData, setCalendarData] = useState<any>(null)
+  const [isLoadingCalendar, setIsLoadingCalendar] = useState(true)
+  const [selectedDay, setSelectedDay] = useState<{
+    date: string
+    transactions: any[]
+    totalSpending: number
+    totalIncome: number
+  } | null>(null)
   const { data: monthMetrics, isLoading, error } = useMonthMetrics(month)
 
-  // Generate mock daily spending data if not available
+  // Fetch calendar data from backend
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      try {
+        setIsLoadingCalendar(true)
+        const userId = "demo_user_123" // In production, this would come from auth context
+        const [year, monthNum] = month.split('-').map(Number)
+        const result = await getCalendarData(userId, year, monthNum)
+        
+        if (result.success && result.data) {
+          setCalendarData(result.data)
+        }
+      } catch (error) {
+        console.error('Error fetching calendar data:', error)
+      } finally {
+        setIsLoadingCalendar(false)
+      }
+    }
+
+    fetchCalendarData()
+  }, [month])
+
+  // Use real calendar data from backend
   const dailySpendingData = useMemo(() => {
+    if (calendarData?.daily_data) {
+      // Map real calendar data to expected format
+      return Object.entries(calendarData.daily_data).map(([date, data]: [string, any]) => ({
+        date: date,
+        totalSpending: {
+          amount: data.expenses, // Use expenses for calendar heatmap
+          currency: "USD",
+          symbol: "$"
+        },
+        totalIncome: {
+          amount: data.income,
+          currency: "USD",
+          symbol: "$"
+        },
+        transactionCount: data.transactions.length,
+        transactions: data.transactions, // Include actual transactions
+        categories: [] // Will be calculated from transactions if needed
+      }))
+    }
+    
+    // Fallback to mock data if no real data available
     if (!monthMetrics?.data) return []
     
     const year = currentDate.getFullYear()
@@ -54,6 +107,7 @@ function CalendarContent() {
           symbol: "$"
         },
         transactionCount: Math.floor(Math.random() * 5) + 1,
+        transactions: [], // Empty for mock data
         categories: [
           {
             category: "food" as const,
@@ -75,11 +129,19 @@ function CalendarContent() {
     }
     
     return data
-  }, [monthMetrics?.data, currentDate])
+  }, [calendarData, monthMetrics?.data, currentDate])
 
   const handleDayClick = (date: string) => {
-    // Deep link to transactions page with date filter
-    router.push(`/transactions?from=${date}&to=${date}`)
+    // Find the day data from our daily spending data
+    const dayData = dailySpendingData.find(day => day.date === date)
+    if (dayData) {
+      setSelectedDay({
+        date: date,
+        transactions: dayData.transactions || [],
+        totalSpending: dayData.totalSpending.amount,
+        totalIncome: (dayData as any).totalIncome?.amount || 0
+      })
+    }
   }
 
   const handlePreviousMonth = () => {
@@ -116,10 +178,15 @@ function CalendarContent() {
     )
   }
 
-  if (isLoading) {
+  if (isLoading || isLoadingCalendar) {
     return (
       <main className="container-5xl py-8">
         <div className="space-y-6">
+          <div className="text-center mb-4">
+            <div className="text-sm text-text-tertiary">
+              {isLoadingCalendar ? 'Loading calendar data from uploaded bank statements...' : 'Loading calendar...'}
+            </div>
+          </div>
           <div className="h-8 bg-muted animate-pulse rounded w-64" />
           <div className="h-32 bg-muted animate-pulse rounded" />
           <div className="grid grid-cols-7 gap-px bg-muted/20 rounded-md overflow-hidden">
@@ -216,6 +283,18 @@ function CalendarContent() {
             monthMetrics={mockMonthMetrics}
           />
         </motion.div>
+
+        {/* Transaction Modal */}
+        {selectedDay && (
+          <DayTransactionModal
+            isOpen={!!selectedDay}
+            onClose={() => setSelectedDay(null)}
+            date={selectedDay.date}
+            transactions={selectedDay.transactions}
+            totalSpending={selectedDay.totalSpending}
+            totalIncome={selectedDay.totalIncome}
+          />
+        )}
       </div>
     </main>
   )

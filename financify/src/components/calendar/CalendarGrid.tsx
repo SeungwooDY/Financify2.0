@@ -2,8 +2,8 @@
 
 import React, { useMemo } from "react"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-// import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/Button"
+// import { Card, CardContent } from "@/components/ui/Card"
 import { MonthMetrics } from "@/lib/types"
 import { formatCurrency } from "@/lib/api"
 import { cn } from "@/lib/utils"
@@ -102,19 +102,19 @@ export function CalendarGrid({
   const getColorClass = (intensity: number, isToday: boolean) => {
     if (intensity === 0) {
       return isToday 
-        ? "bg-primary/20 border-primary/40 hover:bg-primary/30" 
-        : "bg-muted/30 border-muted/50 hover:bg-muted/40"
+        ? "bg-primary/10 border-primary/30 hover:bg-primary/20" 
+        : "bg-muted/20 border-muted/30 hover:bg-muted/30"
     }
     
-    const baseClasses = isToday ? "border-primary/60" : "border-muted/60"
+    const baseClasses = isToday ? "border-primary/40" : "border-muted/40"
     
     switch (intensity) {
-      case 1: return `${baseClasses} bg-green-100 hover:bg-green-200`
-      case 2: return `${baseClasses} bg-green-200 hover:bg-green-300`
-      case 3: return `${baseClasses} bg-yellow-200 hover:bg-yellow-300`
-      case 4: return `${baseClasses} bg-orange-200 hover:bg-orange-300`
-      case 5: return `${baseClasses} bg-red-200 hover:bg-red-300`
-      default: return `${baseClasses} bg-muted/30 hover:bg-muted/40`
+      case 1: return `${baseClasses} bg-green-50/60 hover:bg-green-100/70`
+      case 2: return `${baseClasses} bg-green-100/60 hover:bg-green-150/70`
+      case 3: return `${baseClasses} bg-yellow-50/60 hover:bg-yellow-100/70`
+      case 4: return `${baseClasses} bg-orange-50/60 hover:bg-orange-100/70`
+      case 5: return `${baseClasses} bg-red-50/60 hover:bg-red-100/70`
+      default: return `${baseClasses} bg-muted/20 hover:bg-muted/30`
     }
   }
   
@@ -189,9 +189,14 @@ export function CalendarGrid({
                     {day}
                   </span>
                   {spending > 0 && (
-                    <span className="text-xs font-mono text-muted-foreground mt-1">
-                      {formattedAmount}
-                    </span>
+                    <div className="flex flex-col items-center mt-1 space-y-1">
+                      <span className="text-xs font-mono text-muted-foreground">
+                        {formattedAmount}
+                      </span>
+                      <span className="text-xs text-muted-foreground/70">
+                        {monthMetrics.trend_daily.find(d => d.date === date)?.transactionCount || 0} txn
+                      </span>
+                    </div>
                   )}
                 </div>
               </Button>
