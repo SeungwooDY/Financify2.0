@@ -28,11 +28,9 @@ function AuthProvider({ children }) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const checkAuth = async ()=>{
             try {
-                // Check localStorage for existing session
-                const storedUser = localStorage.getItem('financify_user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
-                }
+                // Check if we're in the browser before accessing localStorage
+                if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                ;
             } catch (err) {
                 console.error('Error checking auth:', err);
             } finally{
@@ -55,7 +53,8 @@ function AuthProvider({ children }) {
                     email: `${username}@example.com`
                 };
                 setUser(userData);
-                localStorage.setItem('financify_user', JSON.stringify(userData));
+                if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                ;
             } else {
                 throw new Error('Please enter both username and password');
             }
@@ -81,7 +80,8 @@ function AuthProvider({ children }) {
                     email: email || `${username}@example.com`
                 };
                 setUser(userData);
-                localStorage.setItem('financify_user', JSON.stringify(userData));
+                if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+                ;
             } else {
                 throw new Error('Please enter both username and password');
             }
@@ -95,7 +95,8 @@ function AuthProvider({ children }) {
     };
     const logout = ()=>{
         setUser(null);
-        localStorage.removeItem('financify_user');
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
         setError(null);
     };
     const value = {
@@ -112,7 +113,7 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/contexts/AuthContext.tsx",
-        lineNumber: 128,
+        lineNumber: 136,
         columnNumber: 5
     }, this);
 }
@@ -2656,7 +2657,7 @@ function AuthWrapper({ children }) {
                 },
                 onBackToLogin: ()=>setShowSignup(false),
                 isLoading: isLoading,
-                error: error
+                error: error || undefined
             }, void 0, false, {
                 fileName: "[project]/src/components/auth/AuthWrapper.tsx",
                 lineNumber: 42,
@@ -2673,7 +2674,7 @@ function AuthWrapper({ children }) {
             },
             onCreateAccount: ()=>setShowSignup(true),
             isLoading: isLoading,
-            error: error
+            error: error || undefined
         }, void 0, false, {
             fileName: "[project]/src/components/auth/AuthWrapper.tsx",
             lineNumber: 58,
