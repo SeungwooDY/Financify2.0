@@ -10,6 +10,7 @@ import {
   Receipt, 
   Calendar, 
   PiggyBank,
+  GraduationCap,
   Menu,
   X
 } from "lucide-react"
@@ -21,6 +22,7 @@ const navigation = [
   { name: "Transactions", href: "/transactions", icon: Receipt },
   { name: "Calendar", href: "/calendar", icon: Calendar },
   { name: "Budget", href: "/budget", icon: PiggyBank },
+  { name: "Loans", href: "/loans", icon: GraduationCap },
 ]
 
 export function Navigation() {
@@ -30,19 +32,18 @@ export function Navigation() {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="lg:hidden">
+      <div className="md:hidden">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden"
         >
           {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
 
       {/* Desktop navigation */}
-      <nav className="hidden lg:flex lg:space-x-1">
+      <nav className="hidden md:flex md:space-x-1">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           return (
@@ -64,7 +65,7 @@ export function Navigation() {
 
       {/* Mobile navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <div className="space-y-1 px-2 pb-3 pt-2">
             {navigation.map((item) => {
               const isActive = pathname === item.href

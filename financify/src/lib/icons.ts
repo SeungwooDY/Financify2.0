@@ -10,6 +10,7 @@ export {
   Home,
   Receipt,
   PiggyBank,
+  GraduationCap,
   
   // Action icons
   Plus,

@@ -11,7 +11,8 @@ import {
   Calendar as CalendarIcon, 
   PieChart,
   Menu,
-  X
+  X,
+  GraduationCap
 } from "@/lib/icons"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -69,6 +70,12 @@ const navItems: NavItem[] = [
     label: "Budget",
     icon: PieChart,
     description: "Budget management"
+  },
+  {
+    href: "/loans",
+    label: "Loans",
+    icon: CreditCard,
+    description: "Student loan recommendations"
   }
 ]
 

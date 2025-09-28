@@ -1,0 +1,98 @@
+[
+  {
+    "id": "direct_subsidized",
+    "kind": "federal",
+    "name": "Direct Subsidized Loan",
+    "provider": "U.S. Department of Education",
+    "url": "https://studentaid.gov/understand-aid/types/loans/subsidized-unsubsidized",
+    "tags": ["need-based", "undergraduate", "federal"],
+    "fixed_apr_range": null,
+    "variable_apr_range": null,
+    "requires_cosigner": false,
+    "school_certified": true,
+    "deferment_options": ["in-school", "grace-period", "economic-hardship"],
+    "fees": ["1.057% origination fee"],
+    "deadline": null,
+    "notes": [
+      "Interest paid by government while in school",
+      "Must demonstrate financial need",
+      "Undergraduate students only",
+      "Must be enrolled at least half-time",
+      "Requires FAFSA completion",
+      "Current rates and limits vary by award year - see studentaid.gov"
+    ],
+    "rate_varies": true
+  },
+  {
+    "id": "direct_unsubsidized",
+    "kind": "federal",
+    "name": "Direct Unsubsidized Loan",
+    "provider": "U.S. Department of Education",
+    "url": "https://studentaid.gov/understand-aid/types/loans/subsidized-unsubsidized",
+    "tags": ["undergraduate", "graduate", "federal"],
+    "fixed_apr_range": null,
+    "variable_apr_range": null,
+    "requires_cosigner": false,
+    "school_certified": true,
+    "deferment_options": ["in-school", "grace-period", "economic-hardship"],
+    "fees": ["1.057% origination fee"],
+    "deadline": null,
+    "notes": [
+      "Interest accrues while in school",
+      "No financial need requirement",
+      "Available to undergraduate and graduate students",
+      "Must be enrolled at least half-time",
+      "Requires FAFSA completion",
+      "Current rates and limits vary by award year - see studentaid.gov"
+    ],
+    "rate_varies": true
+  },
+  {
+    "id": "direct_plus_parent",
+    "kind": "federal",
+    "name": "Direct PLUS Loan - Parent",
+    "provider": "U.S. Department of Education",
+    "url": "https://studentaid.gov/understand-aid/types/loans/plus",
+    "tags": ["parent", "graduate", "federal"],
+    "fixed_apr_range": null,
+    "variable_apr_range": null,
+    "requires_cosigner": false,
+    "school_certified": true,
+    "deferment_options": ["in-school", "grace-period"],
+    "fees": ["4.228% origination fee"],
+    "deadline": null,
+    "notes": [
+      "Parent borrower for dependent undergraduate student",
+      "Credit check required",
+      "No financial need requirement",
+      "Must be enrolled at least half-time",
+      "Requires FAFSA completion",
+      "Current rates and limits vary by award year - see studentaid.gov"
+    ],
+    "rate_varies": true
+  },
+  {
+    "id": "direct_plus_grad",
+    "kind": "federal",
+    "name": "Direct PLUS Loan - Graduate",
+    "provider": "U.S. Department of Education",
+    "url": "https://studentaid.gov/understand-aid/types/loans/plus",
+    "tags": ["graduate", "federal"],
+    "fixed_apr_range": null,
+    "variable_apr_range": null,
+    "requires_cosigner": false,
+    "school_certified": true,
+    "deferment_options": ["in-school", "grace-period"],
+    "fees": ["4.228% origination fee"],
+    "deadline": null,
+    "notes": [
+      "Graduate or professional student borrower",
+      "Credit check required",
+      "No financial need requirement",
+      "Must be enrolled at least half-time",
+      "Requires FAFSA completion",
+      "Current rates and limits vary by award year - see studentaid.gov"
+    ],
+    "rate_varies": true
+  }
+]
