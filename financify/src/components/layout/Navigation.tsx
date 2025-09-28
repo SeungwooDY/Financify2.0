@@ -46,18 +46,20 @@ export function Navigation() {
         {navigation.map((item) => {
           const isActive = pathname === item.href
           return (
-            <Link key={item.name} href={item.href}>
-              <Button
-                variant={isActive ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start",
-                  isActive && "bg-primary text-primary-foreground"
-                )}
-              >
+            <Button
+              key={item.name}
+              asChild
+              variant={isActive ? "default" : "ghost"}
+              className={cn(
+                "w-full justify-start",
+                isActive && "bg-primary text-primary-foreground"
+              )}
+            >
+              <Link href={item.href} aria-current={isActive ? "page" : undefined}>
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.name}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )
         })}
       </nav>
@@ -69,19 +71,21 @@ export function Navigation() {
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
-                <Link key={item.name} href={item.href}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    className={cn(
-                      "w-full justify-start",
-                      isActive && "bg-primary text-primary-foreground"
-                    )}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
+                <Button
+                  key={item.name}
+                  asChild
+                  variant={isActive ? "default" : "ghost"}
+                  className={cn(
+                    "w-full justify-start",
+                    isActive && "bg-primary text-primary-foreground"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Link href={item.href} aria-current={isActive ? "page" : undefined}>
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )
             })}
           </div>
