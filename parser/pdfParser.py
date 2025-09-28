@@ -7,9 +7,14 @@ from bank_profiles import BANK_PROFILES
 
 def extract_transactions_from_pdf(pdf_path):
     def extract_category(desc):
-        category = gemini_categorize_transaction(desc)
-        time.sleep(0.5)  # Add a 0.5 second delay to avoid API rate limits
-        return category
+        while True:
+            category = gemini_categorize_transaction(desc)
+            if category is not None:
+                return category
+            # If Gemini API error was 429, wait and retry
+            import time
+            print("Rate limit hit (429). Waiting 60 seconds before retrying...")
+            time.sleep(60)
     """
     Reads a PDF file and extracts transactions (amount, date, description).
     Returns a list of dictionaries with keys: 'amount', 'date', 'description', 'category'.
